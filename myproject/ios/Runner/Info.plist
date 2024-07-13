@@ -45,5 +45,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- <key>NSBluetoothAlwaysUsageDescription</key>
+	<string>We need bluetooth to enable the app to track the watches.</string> -->
 </dict>
 </plist>
