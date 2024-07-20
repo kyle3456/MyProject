@@ -4,6 +4,7 @@ import 'package:myproject/screens/settings.dart';
 
 var routes = {
   '/': (context) => HomeScreen(),
+  '/camera': (context) => CameraScreen(),
   '/settings': (context) => SettingsScreen(),
 };
  
