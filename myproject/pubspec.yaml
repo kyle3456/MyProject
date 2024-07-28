@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   camera: ^0.11.0+1
   flutter_launcher_icons: ^0.13.1
+  provider: ^6.1.2
+  shared_preferences: ^2.2.3
   # bluetooth_low_energy: ^6.0.2
 
 dev_dependencies:

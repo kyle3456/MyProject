@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:myproject/size_config.dart';
 import 'package:myproject/components/person_card.dart';
 import 'package:myproject/components/NavBar.dart';
+import 'package:myproject/shared/singleton.dart';
 
-class Person {
-  final String name;
-  final String description;
-  final String imagePath;
+// class Person {
+//   final String name;
+//   final String description;
+//   final String imagePath;
 
-  Person(
-      {required this.name, required this.description, required this.imagePath});
-}
+//   Person(
+//       {required this.name, required this.description, required this.imagePath});
+// }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,27 +21,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<Person> persons = [
-    Person(
-        name: 'John Doe',
-        description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
-    Person(
-        name: 'Jane Doe',
-        description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
-    Person(
-        name: 'Kyle',
-        description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
-    Person(
-        name: 'Jane Doe',
-        description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
-  ];
+  // List<Person> persons = [
+  //   Person(
+  //       name: 'John Doe',
+  //       description: "John Doe is a software engineer",
+  //       imagePath: 'assets/Profile Picture.png'),
+  //   Person(
+  //       name: 'Jane Doe',
+  //       description: "John Doe is a software engineer",
+  //       imagePath: 'assets/Profile Picture.png'),
+  //   Person(
+  //       name: 'Kyle',
+  //       description: "John Doe is a software engineer",
+  //       imagePath: 'assets/Profile Picture.png'),
+  //   Person(
+  //       name: 'Jane Doe',
+  //       description: "John Doe is a software engineer",
+  //       imagePath: 'assets/Profile Picture.png'),
+  // ];
 
   @override
   Widget build(BuildContext context) {
+    Singleton singleton = Singleton();
     return Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -56,12 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ListView.builder(
-                          itemCount: persons.length,
+                          itemCount: singleton.persons.length,
                           itemBuilder: (context, index) {
                             return PersonCard(
-                                name: persons[index].name,
-                                description: persons[index].description,
-                                imagePath: persons[index].imagePath);
+                                name: singleton.persons[index].name,
+                                description: singleton.persons[index].description,
+                                imagePath: singleton.persons[index].imagePath);
                           },
                         )),
                   ),

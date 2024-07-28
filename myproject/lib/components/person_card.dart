@@ -1,32 +1,69 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:myproject/size_config.dart';
+import 'package:myproject/shared/singleton.dart';
+import 'package:provider/provider.dart';  
 
-class PersonCard extends StatelessWidget {
-  const PersonCard({super.key, required this.name, required this.description, required this.imagePath});
+class PersonCard extends StatefulWidget {
+  PersonCard(
+      {super.key,
+      required this.name,
+      required this.description,
+      required this.imagePath,
+      this.onTap});
 
   final String name;
   final String description;
-  final String imagePath;
+  String imagePath;
+  final Function? onTap;
 
   @override
+  State<PersonCard> createState() => _PersonCardState();
+}
+
+class _PersonCardState extends State<PersonCard> {
+  @override
   Widget build(BuildContext context) {
+    Singleton singleton = Singleton();
     return SizedBox(
-              width: SizeConfig.blockSizeHorizontal! * 80,
-              height: SizeConfig.blockSizeVertical! * 15,
-              child: Card(
-                color: Colors.blue,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
+      width: SizeConfig.blockSizeHorizontal! * 80,
+      height: SizeConfig.blockSizeVertical! * 15,
+      child: Card(
+          color: Colors.blue,
+          child: InkWell(
+            onTap: () {
+              if (widget.onTap != null) {
+                widget.onTap!();
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Consumer<Singleton>(
+                builder: (context, singleton, child) {
+
+                  final index = singleton.persons.indexWhere((element) => element.name == widget.name);
+
+                  if (index != -1) {
+                    widget.imagePath = singleton.persons[index].imagePath;
+                  }
+
+                  return Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
                         width: SizeConfig.blockSizeHorizontal! * 45,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [ // TODO: upon tap, make the text elements editable
-                            Text(name, style:const TextStyle(fontSize: 20, color: Colors.white)),
-                            Text(description,maxLines: 3,),
+                          children: [
+                            // TODO: upon tap, make the text elements editable
+                            Text(widget.name,
+                                style: const TextStyle(
+                                    fontSize: 20, color: Colors.white)),
+                            Text(
+                              widget.description,
+                              maxLines: 3,
+                            ),
                           ],
                         ),
                       ),
@@ -36,13 +73,17 @@ class PersonCard extends StatelessWidget {
                           width: 100,
                           height: 100,
                           color: Colors.grey,
-                          child: Image.asset(imagePath),
+                          child: (singleton.savedImagePath == '')
+                              ? Image.asset(widget.imagePath)
+                              : Image.file(File(singleton.savedImagePath)),
                         ),
                       )
                     ],
-                  ),
-                )
+                  );
+                },
               ),
-            );
+            ),
+          )),
+    );
   }
 }

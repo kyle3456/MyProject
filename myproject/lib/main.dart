@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:myproject/routes.dart';
+import 'package:myproject/shared/singleton.dart';
 import 'package:myproject/size_config.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => Singleton(), child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

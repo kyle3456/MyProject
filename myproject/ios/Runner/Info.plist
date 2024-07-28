@@ -45,6 +45,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Explanation on why the camera access is needed.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Explanation on why the microphone access is needed.</string>
 	<!-- <key>NSBluetoothAlwaysUsageDescription</key>
 	<string>We need bluetooth to enable the app to track the watches.</string> -->
 </dict>
