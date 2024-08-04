@@ -14,7 +14,7 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  late CameraController controller;
+  CameraController? controller;
   List<CameraDescription> cameras = [];
   XFile? imageFile;
 
@@ -24,8 +24,12 @@ class _CameraScreenState extends State<CameraScreen> {
     availableCameras().then((value) {
       cameras = value;
       print("Cameras: $cameras");
+      if (cameras.isEmpty) {
+        print("No Camera Found");
+        return;
+      }
       controller = CameraController(cameras[0], ResolutionPreset.medium);
-      controller.initialize().then((_) {
+      controller!.initialize().then((_) {
         if (!mounted) {
           return;
         }
@@ -36,13 +40,13 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void dispose() {
-    controller.dispose();
+    controller!.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Controller: $controller");
+    // print("Controller: $controller");
     return Scaffold(
       body: Center(
           child: Stack(
@@ -51,8 +55,8 @@ class _CameraScreenState extends State<CameraScreen> {
             width: SizeConfig.blockSizeHorizontal! * 100,
             height: SizeConfig.blockSizeVertical! * 100,
             color: Colors.black,
-            child: controller.value.isInitialized
-                ? CameraPreview(controller)
+            child: controller != null && controller!.value.isInitialized
+                ? CameraPreview(controller!)
                 : Container(),
           ),
           Positioned(
@@ -71,7 +75,11 @@ class _CameraScreenState extends State<CameraScreen> {
                         padding: const EdgeInsets.all(0),
                       ),
                       onPressed: () {
-                        controller.takePicture().then((value) {
+                        if (controller == null || !controller!.value.isInitialized) {
+                          return;
+                        }
+
+                        controller!.takePicture().then((value) {
                           imageFile = value;
                           print("Image Path: ${imageFile!.path}");
                           Navigator.push(

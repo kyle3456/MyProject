@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:myproject/components/NavBar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:myproject/size_config.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -8,8 +11,129 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  bool _value = true;
+  String _password = '';
+  late final SharedPreferences prefs;
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  void setupPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    _password = prefs.getString('password') ?? '';
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setupPrefs();
+    
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Notifications'),
+                      Switch(
+                        value: _value,
+                        onChanged: (value) {
+                          setState(() {
+                            _value = value;
+                          });
+                        },
+                        activeTrackColor: Colors.lightGreenAccent,
+                        activeColor: Colors.green,
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                      width: SizeConfig.blockSizeHorizontal! * 90,
+                      height: SizeConfig.blockSizeVertical! * 20,
+                      child: (_password == '') ? Card(
+                          color: const Color.fromARGB(255, 122, 122, 122),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextField(
+                                  controller: _passwordController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Enter Password',
+                                  ),
+                                ),
+                                TextField(
+                                  controller: _confirmPasswordController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Confirm Password',
+                                  ),
+                                ),
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      if (_passwordController.text ==
+                                              _confirmPasswordController.text &&
+                                          _passwordController.text.isNotEmpty) {
+                                        await prefs.setString(
+                                          'password',
+                                          _passwordController.text,
+                                        ).then((value) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                                content: Text(
+                                                    'Password created successfully')));
+                                          setState(() {
+                                            _password = _passwordController.text;
+                                          });
+                                        });
+                                        
+                                      }
+                                    },
+                                    child: const Text("Create Password"))
+                              ],
+                            ),
+                          )) : Card(
+                            color: const Color.fromARGB(255, 122, 122, 122),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextField(
+                                  controller: _passwordController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Enter Password',
+                                  ),
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+
+                                    },
+                                    child: const Text("Delete local data"))
+                              ],
+                            ),
+                          )
+                          )),
+                ],
+              ),
+            ),
+          ),
+        ),
+        bottomNavigationBar: NavBar(
+          currentIndex: 2,
+        ));
   }
 }
+
+// delete pref data with password
+// change password
+// notification settings
