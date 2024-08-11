@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:myproject/size_config.dart';
 import 'package:myproject/shared/singleton.dart';
-import 'package:provider/provider.dart';  
+import 'package:provider/provider.dart';
 
 class PersonCard extends StatefulWidget {
   PersonCard(
@@ -23,6 +23,9 @@ class PersonCard extends StatefulWidget {
 }
 
 class _PersonCardState extends State<PersonCard> {
+
+  String status = "";
+
   @override
   Widget build(BuildContext context) {
     Singleton singleton = Singleton();
@@ -37,12 +40,19 @@ class _PersonCardState extends State<PersonCard> {
                 widget.onTap!();
               }
             },
+            onDoubleTap: () {
+              print("double tapped!");
+
+              setState(() {
+                status = "Sending to server";
+                            });
+            },
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Consumer<Singleton>(
                 builder: (context, singleton, child) {
-
-                  final index = singleton.persons.indexWhere((element) => element.name == widget.name);
+                  final index = singleton.persons
+                      .indexWhere((element) => element.name == widget.name);
 
                   if (index != -1) {
                     widget.imagePath = singleton.persons[index].imagePath;
@@ -64,6 +74,8 @@ class _PersonCardState extends State<PersonCard> {
                               widget.description,
                               maxLines: 3,
                             ),
+                            Text(status,
+                                style: const TextStyle(color: Colors.white))
                           ],
                         ),
                       ),
