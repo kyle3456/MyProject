@@ -1,0 +1,6 @@
+train: /Users/kylesong/Downloads/MyProject/ai_code/dataset/train
+val: /Users/kylesong/Downloads/MyProject/ai_code/dataset/validation
+test: /Users/kylesong/Downloads/MyProject/ai_code/dataset/test
+
+nc: 4
+names: ['angry', 'happy', 'sad', 'none']

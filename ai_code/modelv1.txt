@@ -1,0 +1,11 @@
+Ultralytics YOLOv8.2.75 🚀 Python-3.9.6 torch-2.4.0 MPS (Apple M3 Pro)
+Model summary (fused): 168 layers, 3,006,428 parameters, 0 gradients, 8.1 GFLOPs
+val: Scanning /Users/kylesong/Downloads/MyProject/ai_code/dataset/validation/angry.cache
+                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95)
+                   all         11         11      0.702      0.356      0.551      0.551
+                 angry          5          5      0.675        0.4      0.711      0.711
+                 happy          3          3       0.43      0.667      0.585      0.585
+                   sad          3          3          1          0      0.356      0.356
+Speed: 9.8ms preprocess, 290.9ms inference, 0.0ms loss, 74.2ms postprocess per image
+Results saved to /Users/kylesong/Downloads/MyProject/runs/detect/train2
+Validation Precision: 70.17%
