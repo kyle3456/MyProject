@@ -39,6 +39,9 @@ class _PersonCardState extends State<PersonCard> {
               if (widget.onTap != null) {
                 widget.onTap!();
               }
+              setState(() {
+                              
+                            });
             },
             onDoubleTap: () {
               print("double tapped!");
