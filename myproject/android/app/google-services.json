@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "76412777701",
+    "project_id": "myproject-be56d",
+    "storage_bucket": "myproject-be56d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76412777701:android:784cbc467b5bb788b7100c",
+        "android_client_info": {
+          "package_name": "com.kyle.myproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFy9ZWaiEr-EDzZbD-jSlk0h4xHUiX-Pc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
