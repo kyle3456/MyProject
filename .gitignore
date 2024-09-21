@@ -1,2 +1,4 @@
 ai_code/venv
 .DS_Store
+
+myproject/lib/firebase_options.dart
