@@ -1,9 +1,15 @@
 import 'package:myproject/screens/homescreen.dart';
 import 'package:myproject/screens/camerascreen.dart';
 import 'package:myproject/screens/settings.dart';
+import 'package:myproject/screens/login.dart';
+import 'package:myproject/screens/signup.dart';
+import 'package:myproject/initial.dart';
 
 var routes = {
-  '/': (context) => HomeScreen(),
+  '/': (context) => Initial(),
+  '/login': (context) => LoginScreen(),
+  '/signup': (context) => SignupScreen(),
+  '/home': (context) => HomeScreen(),
   '/camera': (context) => CameraScreen(),
   '/settings': (context) => SettingsScreen(),
 };
