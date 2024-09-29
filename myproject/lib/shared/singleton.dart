@@ -39,6 +39,8 @@ class Singleton extends ChangeNotifier {
 
   String savedImagePath = '';
 
+  Map<String, dynamic> userData = {};
+
   void updatePersonImage(String imagePath, String name) {
     final index = persons.indexWhere((element) => element.name == name);
     persons[index] = Person(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myproject/components/NavBar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:myproject/size_config.dart';
+import 'package:myproject/services/auth.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -39,6 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Padding(
               padding: const EdgeInsets.all(25.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -123,12 +125,59 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           )
                           )),
+                  SizedBox(
+                    width: SizeConfig.blockSizeHorizontal! * 50,
+                    child: ElevatedButton(
+                        onPressed: () async {
+                          await Auth().signOut().then((value) {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, '/', (route) => false);
+                          });
+                        },
+                        child: const Text("Log Out")
+                    ),
+                  ),
+                  SizedBox(
+                    width: SizeConfig.blockSizeHorizontal! * 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.red
+                      ),
+                      onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) { 
+                          return AlertDialog(
+                            title: const Text('Delete Account'),
+                            content: const Text('Are you sure you want to delete your account?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  await Auth().deleteUser("police").then((value) { // TODO: replace with true account type
+                                    Navigator.pushNamedAndRemoveUntil(
+                                        context, '/', (route) => false);
+                                  });
+                                },
+                                child: const Text('Delete'),
+                              )
+                            ],
+                          );
+                        }
+                      );
+                    }, child: const Text("Delete Account")),
+                  )
                 ],
               ),
             ),
           ),
         ),
-        bottomNavigationBar: NavBar(
+        bottomNavigationBar: const NavBar(
           currentIndex: 2,
         ));
   }
