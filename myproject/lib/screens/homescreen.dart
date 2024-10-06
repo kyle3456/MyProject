@@ -44,17 +44,18 @@ class _HomeScreenState extends State<HomeScreen> {
   //       imagePath: 'assets/Profile Picture.png'),
   // ];
 
-    final Completer<GoogleMapController> _controller =
+  final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
 
-    static const CameraPosition _kGooglePlex = CameraPosition(
-      target: LatLng(37.42796133580664, -122.085749655962),
-      zoom: 14.4746,
-    );
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(37.42796133580664, -122.085749655962),
+    zoom: 14.4746,
+  );
 
   @override
   Widget build(BuildContext context) {
     Singleton singleton = Singleton();
+    print(singleton.userData);
     return Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -74,7 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemBuilder: (context, index) {
                             return PersonCard(
                                 name: singleton.persons[index].name,
-                                description: singleton.persons[index].description,
+                                description:
+                                    singleton.persons[index].description,
                                 imagePath: singleton.persons[index].imagePath);
                           },
                         )),

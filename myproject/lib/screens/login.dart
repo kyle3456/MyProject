@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             children: [
               Image.asset(
-                'assets/ExampleLogo.jpg',
+                'assets/Logo.png',
                 height: 200,
               ),
               const SizedBox(height: 20),
@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           passwordController.text,
                         ).then((value) {
                           if (value != null) {
-                            Navigator.pushNamed(context, '/home');
+                            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(

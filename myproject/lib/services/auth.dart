@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:myproject/shared/singleton.dart';
 import 'package:latlong2/latlong.dart';
 
 class Auth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final user = FirebaseAuth.instance.currentUser;
+  final Singleton _singleton = Singleton();
 
   // sign in with email and password
   Future<User?> login(String email, String password) async {
@@ -21,7 +23,8 @@ class Auth {
 
   // register with email and password
   Future<User?> registerWithEmailAndPassword(
-      String email, String password, String accountType, String name) async {
+      String email, String password, String accountType, String name,
+      {String phoneNumber = ''}) async {
     try {
       UserCredential? result;
       if (accountType == 'Admin' || accountType == 'Police') {
@@ -29,45 +32,52 @@ class Auth {
         await _auth
             .createUserWithEmailAndPassword(email: email, password: password)
             .then((value) async {
-              if (value.user == null) {
-                return null;
-              }
+          if (value.user == null) {
+            return null;
+          }
 
           // set the display name of the user
-          await value.user!.updateDisplayName(name).then((value) async{
+          await value.user!.updateDisplayName(name).then((_) async {
             print("display name set");
             if (accountType == "Admin") {
-        // create a new document for the user with the uid
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user?.uid)
-            .set({
-          'status': 'normal',
-          'staff': [],
-          'type': 'admin',
-        });
-      } else if (accountType == "Police") {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user?.uid)
-            .set({
-          'location': const GeoPoint(0, 0),
-          'type': 'police',
-        });
-      }
+              // create a new document for the user with the uid
+              print("Creating admin account with uid: ${value.user!.uid}");
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(value.user!.uid)
+                  .set({
+                'status': 'normal',
+                'staff': [],
+                'type': 'admin',
+                'email': email,
+                'password': password,
+              });
+            } else if (accountType == "Police") {
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(user?.uid)
+                  .set({
+                'location': const GeoPoint(0, 0),
+                'type': 'police',
+              });
+            }
           });
         });
       }
 
       if (accountType == "Teacher") {
-        // get the uid of the user, who should be an admin
-        final user = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .get();
+        print("Attempting to create teacher account");
+        // // get the uid of the user, who should be an admin
+        // final user = await FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(FirebaseAuth.instance.currentUser!.uid)
+        //     .get();
+
+        // print("teacher data: ${user.data()}");
+        final String adminUID = user!.uid;
 
         // check that the user is an admin
-        if (user.data()!['type'] == 'admin') {
+        if (_singleton.userData['type'] == 'admin') {
           // create a new document for the user with the uid
           result = await _auth.createUserWithEmailAndPassword(
               email: email, password: password);
@@ -76,8 +86,12 @@ class Auth {
             return null;
           }
 
+          print("Creating teacher account with uid: ${result.user!.uid}");
+
           // set the display name of the user
           await result.user!.updateDisplayName(name);
+
+          print("display name set");
 
           await FirebaseFirestore.instance
               .collection('users')
@@ -86,8 +100,10 @@ class Auth {
             'status': 'normal',
             'location': const GeoPoint(0, 0),
             'type': 'teacher',
-            'admin': FirebaseAuth.instance.currentUser!.uid,
+            'admin': adminUID,
           });
+
+          print("teacher account created");
         } else {
           return null;
         }
@@ -128,16 +144,27 @@ class Auth {
             .get();
 
         // delete the admin
-        await FirebaseFirestore.instance.collection('users').doc(user!.uid).delete();
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .delete();
 
         // delete the staff
         for (var uid in staff.data()!['staff']) {
-          await FirebaseFirestore.instance.collection('users').doc(uid).delete();
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(uid)
+              .delete();
         }
 
         return user!.delete();
-      } else if (accountType == 'teacher') { // TODO: adjust once we have a better idea of teacher system
-        return await FirebaseFirestore.instance.collection('users').doc(user!.uid).delete().then((value) {
+      } else if (accountType == 'teacher') {
+        // TODO: adjust once we have a better idea of teacher system
+        return await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .delete()
+            .then((value) {
           return user!.delete();
         });
       }
