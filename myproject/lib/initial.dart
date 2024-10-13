@@ -31,11 +31,40 @@ class Initial extends StatelessWidget {
 
           if (snapshot.hasData && snapshot.data!.exists) {
             singleton.userData = snapshot.data!.data() as Map<String, dynamic>;
+
+            if (singleton.userData["type"] == "admin") {
+              List<dynamic> staffList =
+                  singleton.userData["staff"];
+              List<dynamic> studentList =
+                  singleton.userData["student"];
+
+              for (int i = 0; i < staffList.length; i++) {
+                singleton.persons.clear();
+                singleton.persons.add(Person(
+                  name: staffList[i]["name"],
+                  description: staffList[i]["email"],
+                  imagePath: (staffList[i].containsKey("image")) ? staffList[i]["image"] : 'assets/Pfp.jpg',
+                ));
+              }
+
+              for (int i = 0; i < studentList.length; i++) {
+                singleton.students.clear();
+                singleton.students.add(Person(
+                  name: studentList[i]["name"],
+                  description: studentList[i]["email"],
+                  imagePath: (studentList[i].containsKey("image")) ? studentList[i]["image"] : 'assets/Pfp.jpg',
+                ));
+              }
+            } else if (singleton.persons.isNotEmpty) {
+              singleton.persons.clear();
+              singleton.students.clear();
+            }
+
             if (kDebugMode) {
               print('Singleton: ${singleton.userData}');
             }
           }
-          
+
           return const HomeScreen();
         });
   }

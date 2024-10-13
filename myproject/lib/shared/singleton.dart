@@ -22,20 +22,22 @@ class Singleton extends ChangeNotifier {
     Person(
         name: 'John Doe',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
+        imagePath: 'assets/Pfp.jpg'),
     Person(
         name: 'Jane Doe',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
+        imagePath: 'assets/Pfp.jpg'),
     Person(
         name: 'Kyle',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
+        imagePath: 'assets/Pfp.jpg'),
     Person(
         name: 'Jane Doe',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Profile Picture.png'),
+        imagePath: 'assets/Pfp.jpg'),
   ];
+
+  List<Person> students = [];
 
   String savedImagePath = '';
 

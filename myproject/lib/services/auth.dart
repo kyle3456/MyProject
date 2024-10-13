@@ -65,7 +65,7 @@ class Auth {
         });
       }
 
-      if (accountType == "Teacher") {
+      if (accountType == "Teacher" || accountType == "Student") {
         print("Attempting to create teacher account");
         // // get the uid of the user, who should be an admin
         // final user = await FirebaseFirestore.instance
@@ -86,7 +86,7 @@ class Auth {
             return null;
           }
 
-          print("Creating teacher account with uid: ${result.user!.uid}");
+          print("Creating $accountType account with uid: ${result.user!.uid}");
 
           // set the display name of the user
           await result.user!.updateDisplayName(name);
@@ -99,11 +99,11 @@ class Auth {
               .set({
             'status': 'normal',
             'location': const GeoPoint(0, 0),
-            'type': 'teacher',
+            'type': accountType.toLowerCase(),
             'admin': adminUID,
           });
 
-          print("teacher account created");
+          print("$accountType account created");
         } else {
           return null;
         }

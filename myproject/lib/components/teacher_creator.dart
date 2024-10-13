@@ -17,6 +17,8 @@ class _TeacherCreatorState extends State<TeacherCreator> {
   TextEditingController phoneController = TextEditingController();
   Singleton singleton = Singleton();
 
+  String createMode = 'Teacher';
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -24,7 +26,15 @@ class _TeacherCreatorState extends State<TeacherCreator> {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: <Widget>[
-            const Text("Create a new teacher"),
+            // const Text("Create a new teacher"),
+            DropdownButton(items: [
+              DropdownMenuItem(child: Text('Create a new teacher'), value: 'Teacher'),
+              DropdownMenuItem(child: Text('Create a new student'), value: 'Student'),
+            ], onChanged: (String? value) {
+              setState(() {
+                createMode = value!;
+              });
+            }, value: createMode),
             TextField(
               controller: nameController,
               decoration: const InputDecoration(labelText: '*Name'),
@@ -49,28 +59,33 @@ class _TeacherCreatorState extends State<TeacherCreator> {
                     .registerWithEmailAndPassword(
                   emailController.text,
                   passwordController.text,
-                  'Teacher',
+                  createMode,
                   nameController.text,
                   phoneNumber: phoneController.text,
                 )
                     .then((value) {
                   print('currently logged in as ${Auth().user!.uid}');
 
-                  final String teacherId = Auth().user!.uid;
-                  final String teacherEmail = emailController.text;
-                  final String teacherPassword = passwordController.text;
-                  final String teacherName = nameController.text;
+                  final String id = Auth().user!.uid;
+                  final String email = emailController.text;
+                  final String password = passwordController.text;
+                  final String name = nameController.text;
 
                   Auth().login(adminEmail, adminPassword).then((value) {
                     print('currently logged in as ${Auth().user!.uid}');
 
                     // record the teach in the staff list of admin
-                    DatabaseService().addStaff(teacherId, teacherEmail, teacherPassword, teacherName);
+                    if (createMode == 'Teacher') {
+                      DatabaseService().addStaff(id, email, password, name);
+                    } else {
+                      // record the student in the student list of admin
+                      DatabaseService().addStudent(id, email, password, name);
+                    }
                   });
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Teacher created'),
+                    SnackBar(
+                      content: Text('$createMode created'),
                     ),
                   );
                 }).catchError((error) {

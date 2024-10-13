@@ -33,7 +33,7 @@ class _PersonCardState extends State<PersonCard> {
       width: SizeConfig.blockSizeHorizontal! * 80,
       height: SizeConfig.blockSizeVertical! * 15,
       child: Card(
-          color: Colors.blue,
+          color: Color.fromARGB(255, 150, 153, 153),
           child: InkWell(
             onTap: () {
               if (widget.onTap != null) {

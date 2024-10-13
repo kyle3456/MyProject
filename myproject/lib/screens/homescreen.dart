@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         )),
                   ),
-                  SizedBox(
+                  (singleton.userData["type"] != 'admin') ? SizedBox(
                     width: SizeConfig.blockSizeHorizontal! * 80,
                     height: SizeConfig.blockSizeVertical! * 55,
                     // child: GoogleMap(
@@ -91,6 +91,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     //     _controller.complete(controller);
                     //   },
                     // ),
+                  ) : SizedBox(
+                    // color: Colors.red,
+                    width: SizeConfig.blockSizeHorizontal! * 85,
+                    height: SizeConfig.blockSizeVertical! * 40,
+                    child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListView.builder(
+                          itemCount: singleton.students.length,
+                          itemBuilder: (context, index) {
+                            return PersonCard(
+                                name: singleton.students[index].name,
+                                description:
+                                    singleton.students[index].description,
+                                imagePath: singleton.students[index].imagePath);
+                          },
+                        )),
                   ),
                   // Container(
                   //     width: SizeConfig.blockSizeHorizontal! * 80,
