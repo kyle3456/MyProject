@@ -31,7 +31,7 @@ class DatabaseService {
     return Future.value();
   }
 
-  Future<void> getListOfStudentsFromAdmin() async {
+  Future<List<dynamic>> getListOfStudentsFromAdmin() async {
     if (singleton.userData['type'] == 'teacher') {
       String adminUID = singleton.userData['admin'];
       final ref = FirebaseFirestore.instance.collection('users').doc(adminUID);
@@ -39,7 +39,9 @@ class DatabaseService {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
       List<dynamic> students = data['student'];
 
-      print(students);
+      print("LIST OF STUDENTS: $students");
+      return students;
     }
+    return [];
   }
 }

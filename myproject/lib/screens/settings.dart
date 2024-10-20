@@ -5,6 +5,7 @@ import 'package:myproject/size_config.dart';
 import 'package:myproject/services/auth.dart';
 import 'package:myproject/shared/singleton.dart';
 import 'package:myproject/components/teacher_creator.dart';
+import 'package:myproject/components/student_edit.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -109,28 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       child: const Text("Create Password"))
                                 ],
                               ),
-                            )) : Card(
-                              color: const Color.fromARGB(255, 122, 122, 122),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  TextField(
-                                    controller: _passwordController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Enter Password',
-                                    ),
-                                  ),
-                                  ElevatedButton(
-                                      onPressed: () {
-              
-                                      },
-                                      child: const Text("Delete local data"))
-                                ],
-                              ),
-                            )
-                            )),
+                            )) : StudentEdit()),
                     SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 50,
                       child: ElevatedButton(

@@ -6,7 +6,8 @@ import 'package:myproject/size_config.dart';
 import 'package:myproject/components/person_card.dart';
 import 'package:myproject/components/NavBar.dart';
 import 'package:myproject/shared/singleton.dart';
-// import 'package:google_maps/google_maps.dart' as gmaps;
+import 'package:myproject/services/locations.dart' as locations;
+
 
 // class Person {
 //   final String name;
@@ -25,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final Map<String, Marker> _markers = {};
   // List<Person> persons = [
   //   Person(
   //       name: 'John Doe',
@@ -52,9 +54,33 @@ class _HomeScreenState extends State<HomeScreen> {
     zoom: 14.4746,
   );
 
+  late GoogleMapController mapController;
+
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    final googleOffices = await locations.getGoogleOffices();
+    setState(() {
+      _markers.clear();
+      for (final office in googleOffices.offices) {
+        final marker = Marker(
+          markerId: MarkerId(office.name),
+          position: LatLng(office.lat, office.lng),
+          infoWindow: InfoWindow(
+            title: office.name,
+            snippet: office.address,
+          ),
+        );
+        _markers[office.name] = marker;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Singleton singleton = Singleton();
+    String accountType = singleton.userData["type"];
+
     print(singleton.userData);
     return Scaffold(
         body: SafeArea(
@@ -64,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Text((accountType == 'admin') ? "Teachers": (accountType == 'teacher') ? "Your Students": "People", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                   SizedBox(
                     // color: Colors.red,
                     width: SizeConfig.blockSizeHorizontal! * 85,
@@ -84,29 +111,43 @@ class _HomeScreenState extends State<HomeScreen> {
                   (singleton.userData["type"] != 'admin') ? SizedBox(
                     width: SizeConfig.blockSizeHorizontal! * 80,
                     height: SizeConfig.blockSizeVertical! * 55,
-                    // child: GoogleMap(
-                    //   mapType: MapType.satellite,
-                    //   initialCameraPosition: _kGooglePlex,
-                    //   onMapCreated: (GoogleMapController controller) {
-                    //     _controller.complete(controller);
-                    //   },
-                    // ),
-                  ) : SizedBox(
-                    // color: Colors.red,
-                    width: SizeConfig.blockSizeHorizontal! * 85,
-                    height: SizeConfig.blockSizeVertical! * 40,
-                    child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                          itemCount: singleton.students.length,
-                          itemBuilder: (context, index) {
-                            return PersonCard(
-                                name: singleton.students[index].name,
-                                description:
-                                    singleton.students[index].description,
-                                imagePath: singleton.students[index].imagePath);
-                          },
-                        )),
+                    child: GoogleMap(
+                      mapType: MapType.satellite,
+                      initialCameraPosition: _kGooglePlex,
+                      // onMapCreated: (GoogleMapController controller) {
+                      //   _controller.complete(controller);
+                      // },
+                      onMapCreated: _onMapCreated,
+                      markers: _markers.values.toSet(),
+                    ),
+        //             child: GoogleMap(
+        //   onMapCreated: _onMapCreated,
+        //   initialCameraPosition: CameraPosition(
+        //     target: _center,
+        //     zoom: 11.0,
+        //   ),
+        // ),
+                  ) : Column(
+                    children: [
+                      const Text('Students', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                      SizedBox(
+                        // color: Colors.red,
+                        width: SizeConfig.blockSizeHorizontal! * 85,
+                        height: SizeConfig.blockSizeVertical! * 40,
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView.builder(
+                              itemCount: singleton.students.length,
+                              itemBuilder: (context, index) {
+                                return PersonCard(
+                                    name: singleton.students[index].name,
+                                    description:
+                                        singleton.students[index].description,
+                                    imagePath: singleton.students[index].imagePath);
+                              },
+                            )),
+                      ),
+                    ],
                   ),
                   // Container(
                   //     width: SizeConfig.blockSizeHorizontal! * 80,
