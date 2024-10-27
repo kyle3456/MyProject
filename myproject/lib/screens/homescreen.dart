@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:myproject/services/database.dart';
 import 'package:myproject/size_config.dart';
 import 'package:myproject/components/person_card.dart';
 import 'package:myproject/components/NavBar.dart';
 import 'package:myproject/shared/singleton.dart';
 import 'package:myproject/services/locations.dart' as locations;
-
+import 'package:provider/provider.dart';
 
 // class Person {
 //   final String name;
@@ -26,6 +28,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final Singleton singleton = Singleton();
   final Map<String, Marker> _markers = {};
   // List<Person> persons = [
   //   Person(
@@ -90,7 +93,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text((accountType == 'admin') ? "Teachers": (accountType == 'teacher') ? "Your Students": "People", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                  Text(
+                    (accountType == 'admin')
+                        ? "Teachers"
+                        : (accountType == 'teacher')
+                            ? "Your Students"
+                            : "People",
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
                   SizedBox(
                     // color: Colors.red,
                     width: SizeConfig.blockSizeHorizontal! * 85,
@@ -108,47 +119,81 @@ class _HomeScreenState extends State<HomeScreen> {
                           },
                         )),
                   ),
-                  (singleton.userData["type"] != 'admin') ? SizedBox(
-                    width: SizeConfig.blockSizeHorizontal! * 80,
-                    height: SizeConfig.blockSizeVertical! * 55,
-                    child: GoogleMap(
-                      mapType: MapType.satellite,
-                      initialCameraPosition: _kGooglePlex,
-                      // onMapCreated: (GoogleMapController controller) {
-                      //   _controller.complete(controller);
-                      // },
-                      onMapCreated: _onMapCreated,
-                      markers: _markers.values.toSet(),
-                    ),
-        //             child: GoogleMap(
-        //   onMapCreated: _onMapCreated,
-        //   initialCameraPosition: CameraPosition(
-        //     target: _center,
-        //     zoom: 11.0,
-        //   ),
-        // ),
-                  ) : Column(
-                    children: [
-                      const Text('Students', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
-                      SizedBox(
-                        // color: Colors.red,
-                        width: SizeConfig.blockSizeHorizontal! * 85,
-                        height: SizeConfig.blockSizeVertical! * 40,
-                        child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListView.builder(
-                              itemCount: singleton.students.length,
-                              itemBuilder: (context, index) {
-                                return PersonCard(
-                                    name: singleton.students[index].name,
-                                    description:
-                                        singleton.students[index].description,
-                                    imagePath: singleton.students[index].imagePath);
-                              },
-                            )),
-                      ),
-                    ],
-                  ),
+                  (singleton.userData["type"] != 'admin')
+                      ? Consumer<Singleton>(
+                          builder: (context, singleton, child) {
+                            return SizedBox(
+                                width: SizeConfig.blockSizeHorizontal! * 80,
+                                height: SizeConfig.blockSizeHorizontal! * 80,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        (singleton.userData['status'] ==
+                                                'normal')
+                                            ? Color.fromARGB(255, 175, 76, 76)
+                                            : Color.fromARGB(255, 76, 175, 79),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(250),
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    HapticFeedback.heavyImpact();
+                                    setState(() {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return const ReportPopup();
+                                        },
+                                      );
+                                    });
+                                  },
+                                  child: Text(
+                                    (singleton.userData['status'] == 'normal')
+                                        ? 'REPORT DANGER'
+                                        : 'ALL CLEAR',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 20),
+                                  ),
+                                )
+                                // child: GoogleMap(
+                                //   mapType: MapType.satellite,
+                                //   initialCameraPosition: _kGooglePlex,
+                                //   // onMapCreated: (GoogleMapController controller) {
+                                //   //   _controller.complete(controller);
+                                //   // },
+                                //   onMapCreated: _onMapCreated,
+                                //   markers: _markers.values.toSet(),
+                                // ),
+                                );
+                          },
+                        )
+                      : Column(
+                          children: [
+                            const Text(
+                              'Students',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              // color: Colors.red,
+                              width: SizeConfig.blockSizeHorizontal! * 85,
+                              height: SizeConfig.blockSizeVertical! * 40,
+                              child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: ListView.builder(
+                                    itemCount: singleton.students.length,
+                                    itemBuilder: (context, index) {
+                                      return PersonCard(
+                                          name: singleton.students[index].name,
+                                          description: singleton
+                                              .students[index].description,
+                                          imagePath: singleton
+                                              .students[index].imagePath);
+                                    },
+                                  )),
+                            ),
+                          ],
+                        ),
                   // Container(
                   //     width: SizeConfig.blockSizeHorizontal! * 80,
                   //     height: SizeConfig.blockSizeVertical! * 55,
@@ -179,5 +224,34 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         bottomNavigationBar: NavBar());
+  }
+}
+
+class ReportPopup extends StatelessWidget {
+  const ReportPopup({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Are you sure?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            // Handle report submission
+
+            DatabaseService().markSOS();
+
+            Navigator.of(context).pop();
+          },
+          child: const Text('Submit'),
+        ),
+      ],
+    );
   }
 }

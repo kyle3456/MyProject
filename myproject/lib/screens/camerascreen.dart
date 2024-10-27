@@ -101,7 +101,7 @@ class _CameraScreenState extends State<CameraScreen> {
         ],
       )),
       bottomNavigationBar: NavBar(
-        currentIndex: 1,
+        currentIndex: 2,
       ),
     );
   }

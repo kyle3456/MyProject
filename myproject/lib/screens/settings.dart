@@ -67,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       TeacherCreator(),
                     SizedBox(
                         width: SizeConfig.blockSizeHorizontal! * 90,
-                        height: SizeConfig.blockSizeVertical! * 20,
+                        height: SizeConfig.blockSizeVertical! * 25,
                         child: (_password == '') ? Card(
                             color: const Color.fromARGB(255, 122, 122, 122),
                             child: Padding(
@@ -165,7 +165,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
         bottomNavigationBar: const NavBar(
-          currentIndex: 2,
+          currentIndex: 3,
         ));
   }
 }

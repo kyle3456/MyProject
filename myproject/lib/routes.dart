@@ -1,4 +1,5 @@
 import 'package:myproject/screens/homescreen.dart';
+import 'package:myproject/screens/mapscreen.dart';
 import 'package:myproject/screens/camerascreen.dart';
 import 'package:myproject/screens/settings.dart';
 import 'package:myproject/screens/login.dart';
@@ -10,6 +11,7 @@ var routes = {
   '/login': (context) => LoginScreen(),
   '/signup': (context) => SignupScreen(),
   '/home': (context) => HomeScreen(),
+  '/map': (context) => MapScreen(),
   '/camera': (context) => CameraScreen(),
   '/settings': (context) => SettingsScreen(),
 };

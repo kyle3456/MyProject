@@ -53,6 +53,8 @@ class Singleton extends ChangeNotifier {
   }
 
   void notify() {
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 }

@@ -33,17 +33,17 @@ class Initial extends StatelessWidget {
             singleton.userData = snapshot.data!.data() as Map<String, dynamic>;
 
             if (singleton.userData["type"] == "admin") {
-              List<dynamic> staffList =
-                  singleton.userData["staff"];
-              List<dynamic> studentList =
-                  singleton.userData["student"];
+              List<dynamic> staffList = singleton.userData["staff"];
+              List<dynamic> studentList = singleton.userData["student"];
 
               for (int i = 0; i < staffList.length; i++) {
                 singleton.persons.clear();
                 singleton.persons.add(Person(
                   name: staffList[i]["name"],
                   description: staffList[i]["email"],
-                  imagePath: (staffList[i].containsKey("image")) ? staffList[i]["image"] : 'assets/Pfp.jpg',
+                  imagePath: (staffList[i].containsKey("image"))
+                      ? staffList[i]["image"]
+                      : 'assets/Pfp.jpg',
                 ));
               }
 
@@ -52,7 +52,9 @@ class Initial extends StatelessWidget {
                 singleton.students.add(Person(
                   name: studentList[i]["name"],
                   description: studentList[i]["email"],
-                  imagePath: (studentList[i].containsKey("image")) ? studentList[i]["image"] : 'assets/Pfp.jpg',
+                  imagePath: (studentList[i].containsKey("image"))
+                      ? studentList[i]["image"]
+                      : 'assets/Pfp.jpg',
                 ));
               }
             } else if (singleton.persons.isNotEmpty) {
@@ -63,6 +65,8 @@ class Initial extends StatelessWidget {
             if (kDebugMode) {
               print('Singleton: ${singleton.userData}');
             }
+
+            singleton.notify();
           }
 
           return const HomeScreen();

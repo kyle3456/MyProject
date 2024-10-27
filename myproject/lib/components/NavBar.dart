@@ -13,18 +13,23 @@ class _NavBarState extends State<NavBar> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      fixedColor: Colors.blue,
       currentIndex: widget.currentIndex,
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: Icon(Icons.home, color: Colors.grey,),
           label: 'Home',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.camera),
+          icon: Icon(Icons.map, color: Colors.grey,),
+          label: 'Map',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.camera, color: Colors.grey,),
           label: 'Camera',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
+          icon: Icon(Icons.settings, color: Colors.grey,),
           label: 'Settings',
         ),
       ],
@@ -35,9 +40,12 @@ class _NavBarState extends State<NavBar> {
             Navigator.pushNamed(context, '/');
             break;
           case 1:
-            Navigator.pushNamed(context, '/camera');
+            Navigator.pushNamed(context, '/map');
             break;
           case 2:
+            Navigator.pushNamed(context, '/camera');
+            break;
+          case 3:
             Navigator.pushNamed(context, '/settings');
             break;
         }

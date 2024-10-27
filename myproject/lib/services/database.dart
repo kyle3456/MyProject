@@ -44,4 +44,14 @@ class DatabaseService {
     }
     return [];
   }
+
+  Future<void> markSOS() {
+    // set the status of self to SOS
+    final ref = FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+    if (singleton.userData['status'] == 'SOS') {
+      return ref.update({'status': 'normal'});
+    }
+    return ref.update({'status': 'SOS'});
+  }
 }
