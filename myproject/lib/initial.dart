@@ -44,6 +44,7 @@ class Initial extends StatelessWidget {
                   imagePath: (staffList[i].containsKey("image"))
                       ? staffList[i]["image"]
                       : 'assets/Pfp.jpg',
+                  uid: staffList[i]["uid"],
                 ));
               }
 
@@ -55,6 +56,7 @@ class Initial extends StatelessWidget {
                   imagePath: (studentList[i].containsKey("image"))
                       ? studentList[i]["image"]
                       : 'assets/Pfp.jpg',
+                  uid: studentList[i]["uid"],
                 ));
               }
             } else if (singleton.persons.isNotEmpty) {

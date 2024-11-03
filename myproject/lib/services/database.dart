@@ -45,6 +45,30 @@ class DatabaseService {
     return [];
   }
 
+  Future<void> addStudentToTeacherRoster(String studentUID) {
+    if (singleton.userData['type'] == 'teacher') {
+      final ref = FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // append uid to the array at field student
+      return ref.update({
+        'students': FieldValue.arrayUnion([studentUID])
+      });
+    }
+    return Future.value();
+  }
+
+  Future<void> removeStudentFromTeacherRoster(String studentUID) {
+    if (singleton.userData['type'] == 'teacher') {
+      final ref = FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // append uid to the array at field student
+      return ref.update({
+        'students': FieldValue.arrayRemove([studentUID])
+      });
+    }
+    return Future.value();
+  }
+
   Future<void> markSOS() {
     // set the status of self to SOS
     final ref = FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
@@ -54,4 +78,17 @@ class DatabaseService {
     }
     return ref.update({'status': 'SOS'});
   }
+
+  // Future<void> getStudentLocations() {
+  //   // determine our account type
+  //   String type = singleton.userData['type'];
+
+  //   if (type == 'admin') { 
+
+  //   } else if (type == 'teacher') {
+
+  //   } else if (type == 'police') {
+
+  //   }
+  // }
 }

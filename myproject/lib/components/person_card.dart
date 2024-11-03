@@ -11,11 +11,13 @@ class PersonCard extends StatefulWidget {
       required this.name,
       required this.description,
       required this.imagePath,
+      required this.uid,
       this.onTap});
 
   final String name;
   final String description;
   String imagePath;
+  final String uid;
   final Function? onTap;
 
   @override
@@ -23,32 +25,42 @@ class PersonCard extends StatefulWidget {
 }
 
 class _PersonCardState extends State<PersonCard> {
-
   String status = "";
+  bool inTeacherRoster = false;
+
+  void checkIfStudentInTeacherRoster() {
+    Singleton singleton = Singleton();
+    final String type = singleton.userData['type'];
+    if (type == 'teacher' &&
+        singleton.userData.containsKey('students') &&
+        singleton.userData['students'].contains(widget.uid)) {
+      inTeacherRoster = true;
+      setState(() {});
+    }
+    inTeacherRoster = false;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    Singleton singleton = Singleton();
     return SizedBox(
       width: SizeConfig.blockSizeHorizontal! * 80,
       height: SizeConfig.blockSizeVertical! * 15,
       child: Card(
-          color: Color.fromARGB(255, 150, 153, 153),
+          color: (inTeacherRoster) ? Color.fromARGB(255, 109, 230, 135) : Color.fromARGB(255, 150, 153, 153),
           child: InkWell(
             onTap: () {
               if (widget.onTap != null) {
                 widget.onTap!();
               }
-              setState(() {
-                              
-                            });
+              setState(() {});
             },
             onDoubleTap: () {
               print("double tapped!");
 
               setState(() {
                 status = "Sending to server";
-                            });
+              });
             },
             child: Padding(
               padding: const EdgeInsets.all(16.0),

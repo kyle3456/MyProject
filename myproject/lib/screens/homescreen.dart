@@ -115,7 +115,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 name: singleton.persons[index].name,
                                 description:
                                     singleton.persons[index].description,
-                                imagePath: singleton.persons[index].imagePath);
+                                imagePath: singleton.persons[index].imagePath,
+                                uid: singleton.persons[index].uid,
+                                );
                           },
                         )),
                   ),
@@ -188,7 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           description: singleton
                                               .students[index].description,
                                           imagePath: singleton
-                                              .students[index].imagePath);
+                                              .students[index].imagePath,
+                                              uid: singleton.students[index].uid,);
                                     },
                                   )),
                             ),

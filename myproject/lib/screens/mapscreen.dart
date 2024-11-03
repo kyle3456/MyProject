@@ -4,6 +4,15 @@ import 'package:myproject/components/NavBar.dart';
 import 'package:myproject/size_config.dart';
 import 'package:myproject/services/locations.dart' as locations;
 
+/*
+33.61882, -117.82342  =3
+33.619179, -117.822877 =5
+33.618118 -117.821911 =2
+33.618496 -117.823835 =1
+33.619461 -117.822501 = 2
+33.618062 -117.823057 =2
+ */
+
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -16,8 +25,8 @@ class _MapScreenState extends State<MapScreen> {
   final Map<String, Marker> _markers = {};
 
   static const CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962),
-    zoom: 14.4746,
+    target: LatLng(33.61806, -117.823),
+    zoom: 18,
   );
 
   late GoogleMapController mapController;

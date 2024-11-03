@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     if (singleton.userData['type'] == 'admin')
                       TeacherCreator(),
-                    SizedBox(
+                     (singleton.userData['type'] != 'teacher') ? SizedBox(
                         width: SizeConfig.blockSizeHorizontal! * 90,
                         height: SizeConfig.blockSizeVertical! * 25,
                         child: (_password == '') ? Card(
@@ -110,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       child: const Text("Create Password"))
                                 ],
                               ),
-                            )) : StudentEdit()),
+                            )) : Container() ) : const StudentEdit(),
                     SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 50,
                       child: ElevatedButton(

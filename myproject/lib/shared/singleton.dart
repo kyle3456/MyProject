@@ -4,9 +4,10 @@ class Person {
   final String name;
   final String description;
   final String imagePath;
+  final String uid;
 
   Person(
-      {required this.name, required this.description, required this.imagePath});
+      {required this.name, required this.description, required this.imagePath, required this.uid});
 }
 
 class Singleton extends ChangeNotifier {
@@ -22,19 +23,23 @@ class Singleton extends ChangeNotifier {
     Person(
         name: 'John Doe',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Pfp.jpg'),
+        imagePath: 'assets/Pfp.jpg',
+        uid: '1'),
     Person(
         name: 'Jane Doe',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Pfp.jpg'),
+        imagePath: 'assets/Pfp.jpg',
+        uid: '2'),
     Person(
         name: 'Kyle',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Pfp.jpg'),
+        imagePath: 'assets/Pfp.jpg',
+        uid: '3'),
     Person(
         name: 'Jane Doe',
         description: "John Doe is a software engineer",
-        imagePath: 'assets/Pfp.jpg'),
+        imagePath: 'assets/Pfp.jpg'
+        ,uid: '4'),
   ];
 
   List<Person> students = [];
@@ -48,7 +53,8 @@ class Singleton extends ChangeNotifier {
     persons[index] = Person(
         name: persons[index].name,
         description: persons[index].description,
-        imagePath: imagePath);
+        imagePath: imagePath,
+        uid: persons[index].uid);
     notifyListeners();
   }
 
