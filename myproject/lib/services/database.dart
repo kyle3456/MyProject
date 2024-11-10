@@ -69,6 +69,18 @@ class DatabaseService {
     return Future.value();
   }
 
+  Future<Map<String, dynamic>> getStudentLocation(String studentUID) async {
+    final ref = FirebaseFirestore.instance.collection('users').doc(studentUID);
+    var studentData = ref.get();
+
+    Map<String, dynamic> studentLocation = await studentData.then((value) => value.data() as Map<String, dynamic>);
+
+    // add the student's uid to the map
+    studentLocation['uid'] = studentUID;
+
+    return studentLocation;
+  }
+
   Future<void> markSOS() {
     // set the status of self to SOS
     final ref = FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);

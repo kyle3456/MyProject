@@ -27,9 +27,9 @@ class _TeacherCreatorState extends State<TeacherCreator> {
         child: Column(
           children: <Widget>[
             // const Text("Create a new teacher"),
-            DropdownButton(items: [
-              DropdownMenuItem(child: Text('Create a new teacher'), value: 'Teacher'),
-              DropdownMenuItem(child: Text('Create a new student'), value: 'Student'),
+            DropdownButton(items: const [
+              DropdownMenuItem(value: 'Teacher', child: Text('Create a new teacher')),
+              DropdownMenuItem(value: 'Student', child: Text('Create a new student')),
             ], onChanged: (String? value) {
               setState(() {
                 createMode = value!;

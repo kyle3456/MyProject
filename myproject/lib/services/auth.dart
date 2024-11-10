@@ -51,6 +51,7 @@ class Auth {
                 'type': 'admin',
                 'email': email,
                 'password': password,
+                'name': name,
               });
             } else if (accountType == "Police") {
               await FirebaseFirestore.instance
@@ -101,6 +102,7 @@ class Auth {
             'location': const GeoPoint(0, 0),
             'type': accountType.toLowerCase(),
             'admin': adminUID,
+            'name': name,
           });
 
           print("$accountType account created");
