@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
           );
         }
         return MaterialApp(
-          title: 'Flutter Demo',
+          title: 'SafeMap',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             // This is the theme of your application.

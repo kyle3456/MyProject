@@ -24,10 +24,10 @@ class _NavBarState extends State<NavBar> {
           icon: Icon(Icons.map, color: Colors.grey,),
           label: 'Map',
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.camera, color: Colors.grey,),
-          label: 'Camera',
-        ),
+        // BottomNavigationBarItem(
+        //   icon: Icon(Icons.camera, color: Colors.grey,),
+        //   label: 'Camera',
+        // ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings, color: Colors.grey,),
           label: 'Settings',
@@ -42,10 +42,10 @@ class _NavBarState extends State<NavBar> {
           case 1:
             Navigator.pushNamed(context, '/map');
             break;
+          // case 2:
+          //   Navigator.pushNamed(context, '/camera');
+          //   break;
           case 2:
-            Navigator.pushNamed(context, '/camera');
-            break;
-          case 3:
             Navigator.pushNamed(context, '/settings');
             break;
         }

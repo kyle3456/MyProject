@@ -80,6 +80,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    DatabaseService().getListOfStudentsFromTeacher().then((value) {
+      setState(() {
+        singleton.persons = value;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     Singleton singleton = Singleton();
     String accountType = singleton.userData["type"];

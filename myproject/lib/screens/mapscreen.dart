@@ -102,7 +102,7 @@ class _MapScreenState extends State<MapScreen> {
             clumpCount++;
 
             // create a new marker
-            final marker = Marker(
+            final marker = Marker( // TODO: customize the marker color
               markerId: MarkerId('Group of $clumpCount'), // TODO: clump count is currently wrong
               position: LatLng(newLat, newLong),
               infoWindow: InfoWindow(
@@ -187,6 +187,10 @@ class _MapScreenState extends State<MapScreen> {
                 // },
                 onMapCreated: _onMapCreated,
                 markers: _markers.values.toSet(),
+                onTap: (LatLng latLng) {
+                  print('Tapped on $latLng');
+                },
+                buildingsEnabled: true,
               ))),
       bottomNavigationBar: const NavBar(
         currentIndex: 1,
