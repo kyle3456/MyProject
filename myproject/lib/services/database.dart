@@ -5,6 +5,29 @@ import 'package:myproject/shared/singleton.dart';
 class DatabaseService {
   final Singleton singleton = Singleton();
 
+  Future<void> createSchool(String schoolName, String adminUID, double lat, double long) {
+    final ref = FirebaseFirestore.instance.collection('schools').doc();
+    ref.set({
+      'name': schoolName,
+      'admin': adminUID,
+      'location': GeoPoint(lat, long),
+    });
+
+    // add the school to the admin's list of schools
+    final adminRef = FirebaseFirestore.instance.collection('users').doc(adminUID);
+    return adminRef.update({
+      'schools': FieldValue.arrayUnion([ref.id])
+    });
+  }
+
+  Future<List<dynamic>> getListOfSchools() async {
+    final ref = FirebaseFirestore.instance.collection('schools');
+    QuerySnapshot snapshot = await ref.get();
+    List<dynamic> schools = snapshot.docs;
+
+    return schools;
+  }
+
   Future<void> addStaff(
       String teacherUID, String email, String password, String name) {
     // check if the current user is an admin first

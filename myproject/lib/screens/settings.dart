@@ -5,6 +5,8 @@ import 'package:myproject/size_config.dart';
 import 'package:myproject/services/auth.dart';
 import 'package:myproject/shared/singleton.dart';
 import 'package:myproject/components/teacher_creator.dart';
+import 'package:myproject/components/school_search.dart';
+import 'package:myproject/components/school_creator.dart';
 import 'package:myproject/components/student_edit.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -38,6 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("USER DATAA ${singleton.userData}");
     return Scaffold(
         body: SafeArea(
           child: Center(
@@ -64,7 +67,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                     if (singleton.userData['type'] == 'admin')
-                      TeacherCreator(),
+                      const TeacherCreator(),
+                    if (singleton.userData['type'] == 'police')
+                      const SchoolSearch(),
                      (singleton.userData['type'] != 'teacher') ? SizedBox(
                         width: SizeConfig.blockSizeHorizontal! * 90,
                         height: SizeConfig.blockSizeVertical! * 25,
@@ -111,6 +116,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ],
                               ),
                             )) : Container() ) : const StudentEdit(),
+                    if (singleton.userData['type'] == 'admin')
+                      SchoolCreator(),
                     SizedBox(
                       width: SizeConfig.blockSizeHorizontal! * 50,
                       child: ElevatedButton(

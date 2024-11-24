@@ -16,6 +16,14 @@ class _StudentEditState extends State<StudentEdit> {
   List<PersonCard> studentCards = [];
   Singleton singleton = Singleton();
 
+  List<PersonCard> filteredStudents = [];
+
+  void filterStudents() {
+    filteredStudents = studentCards
+        .where((student) => student.name.toLowerCase().contains(_nameController.text.toLowerCase()))
+        .toList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +52,8 @@ class _StudentEditState extends State<StudentEdit> {
                   }
               });
         }).toList();
+
+        filteredStudents = List.from(studentCards);
       });
     });
   }
@@ -61,10 +71,15 @@ class _StudentEditState extends State<StudentEdit> {
                   TextField(
                     controller: _nameController,
                     decoration: const InputDecoration(labelText: 'Search'),
+                    onChanged: (value) {
+                      setState(() {
+                        filterStudents();
+                      });
+                    },
                   ),
                   ListView(
                     shrinkWrap: true,
-                    children: studentCards,
+                    children: filteredStudents,
                   ),
                 ],
               ))),
