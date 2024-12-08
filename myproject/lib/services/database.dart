@@ -13,10 +13,10 @@ class DatabaseService {
       'location': GeoPoint(lat, long),
     });
 
-    // add the school to the admin's list of schools
+    // add the school to the admin's school field
     final adminRef = FirebaseFirestore.instance.collection('users').doc(adminUID);
     return adminRef.update({
-      'schools': FieldValue.arrayUnion([ref.id])
+      'schools': ref.id
     });
   }
 
