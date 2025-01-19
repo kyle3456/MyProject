@@ -159,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     });
                                   },
-                                  child: Text(
+                                  child: Text( // TODO: the student card occasionally disappear for some reason
                                     (singleton.userData['status'] == 'normal')
                                         ? 'REPORT DANGER'
                                         : 'ALL CLEAR',

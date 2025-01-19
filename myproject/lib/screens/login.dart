@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'App Name',
+                'GuardianMap',
                 style: TextStyle(fontSize: 30),
               ),
               const SizedBox(height: 20),
