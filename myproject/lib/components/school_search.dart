@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:myproject/services/database.dart';
 import 'package:myproject/shared/singleton.dart';
+import 'package:myproject/size_config.dart';
+import 'package:geocoding/geocoding.dart';
 
 class SchoolSearch extends StatefulWidget {
   const SchoolSearch({super.key});
@@ -40,8 +42,7 @@ class _SchoolSearchState extends State<SchoolSearch> {
               schoolName: school['name'],
               schoolGeoLocation: school['location'],
               adminID: school['admin'],
-              schoolID: school.id
-          );
+              schoolID: school.id);
         }).toList();
 
         filteredSchools = List.from(schoolCards);
@@ -78,7 +79,12 @@ class _SchoolSearchState extends State<SchoolSearch> {
 }
 
 class SchoolCard extends StatefulWidget {
-  const SchoolCard({super.key, required this.schoolName, required this.schoolGeoLocation, required this.adminID, required this.schoolID});
+  const SchoolCard(
+      {super.key,
+      required this.schoolName,
+      required this.schoolGeoLocation,
+      required this.adminID,
+      required this.schoolID});
   final String schoolName;
   final GeoPoint schoolGeoLocation;
   final String adminID;
@@ -89,16 +95,52 @@ class SchoolCard extends StatefulWidget {
 }
 
 class _SchoolCardState extends State<SchoolCard> {
+  Placemark? schoolLocation;
+  String fullAddress = "";
+
+  @override
+  void initState() {
+    super.initState();
+    // get school location
+    getSchoolLocation().then((value) {
+      print("SCHOOL LOCATION: $value");
+      setState(() {
+        schoolLocation = value;
+        fullAddress =
+            "${schoolLocation!.street}\n${schoolLocation!.locality} ${schoolLocation!.administrativeArea} ${schoolLocation!.postalCode}";
+      });
+    });
+  }
+
+  Future<Placemark> getSchoolLocation() async {
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        widget.schoolGeoLocation.latitude, widget.schoolGeoLocation.longitude);
+    return placemarks[0];
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          Text(widget.schoolName),
-          Text(widget.schoolGeoLocation.toString()),
-          Text(widget.adminID),
-          Text(widget.schoolID),
-        ],
+    return SizedBox(
+      height: SizeConfig.blockSizeVertical! * 10,
+      child: InkWell(
+        onTap: () {
+          print("Sending request to admin: ${widget.adminID}");
+          DatabaseService().sendSchoolRequestToAdmin(widget.adminID);
+        },
+        child: Card(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(widget.schoolName),
+              Text(
+                schoolLocation != null ? fullAddress : "Loading...",
+                textAlign: TextAlign.center,
+              ),
+              // Text(widget.adminID),
+              // Text(widget.schoolID),
+            ],
+          ),
+        ),
       ),
     );
   }

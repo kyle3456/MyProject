@@ -60,6 +60,7 @@ class Auth {
                   .set({
                 'location': const GeoPoint(0, 0),
                 'type': 'police',
+                'chosen_schools': {},
               });
             }
           });

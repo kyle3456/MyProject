@@ -230,4 +230,18 @@ class DatabaseService {
 
   //   }
   // }
+
+
+  Future<void> sendSchoolRequestToAdmin(String adminUID) {
+    // check that our account type is police
+    if (singleton.userData['type'] != 'police') {
+      return Future.value();
+    }
+
+    final ref = FirebaseFirestore.instance.collection('users').doc(adminUID);
+
+    return ref.update({
+      'police_requests': FieldValue.arrayUnion([Auth().user!.uid])
+    });
+  }
 }

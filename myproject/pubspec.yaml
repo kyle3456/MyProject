@@ -49,6 +49,7 @@ dependencies:
   json_serializable: ^6.8.0
   build_runner: ^2.4.11
   firebase_database: ^11.3.0
+  geocoding: ^3.0.0
 
 
 dev_dependencies:

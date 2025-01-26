@@ -79,6 +79,24 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> getNotifications() async {
+    // check account type
+    if (singleton.userData["type"] == 'admin') {
+      // get all notifications
+      // return all notifications
+    } else if (singleton.userData["type"] == 'teacher') {
+      // get notifications for the user
+      // return notifications for the user
+    } else if (singleton.userData["type"] == 'student') {
+      // get notifications for the user
+      // return notifications for the user
+    } else if (singleton.userData["type"] == 'police') {
+      // get notifications for the user
+      // return notifications for the user
+      
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +114,38 @@ class _HomeScreenState extends State<HomeScreen> {
 
     print(singleton.userData);
     return Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          actions: [
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.email),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              ),
+            ),
+          ],
+        ),
+        endDrawer: Drawer(
+          child: SafeArea(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                NotificationCard(message: "You have a message", enableActions: true,),
+                // ListTile(
+                //   title: const Text('Settings'),
+                //   onTap: () {
+                //   },
+                // ),
+                // ListTile(
+                //   title: const Text('Logout'),
+                //   onTap: () {
+                //   },
+                // ),
+              ],
+            ),
+          ),
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Center(
@@ -122,12 +172,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           itemCount: singleton.persons.length,
                           itemBuilder: (context, index) {
                             return PersonCard(
-                                name: singleton.persons[index].name,
-                                description:
-                                    singleton.persons[index].description,
-                                imagePath: singleton.persons[index].imagePath,
-                                uid: singleton.persons[index].uid,
-                                );
+                              name: singleton.persons[index].name,
+                              description: singleton.persons[index].description,
+                              imagePath: singleton.persons[index].imagePath,
+                              uid: singleton.persons[index].uid,
+                            );
                           },
                         )),
                   ),
@@ -159,7 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     });
                                   },
-                                  child: Text( // TODO: the student card occasionally disappear for some reason
+                                  child: Text(
+                                    // TODO: the student card occasionally disappear for some reason
                                     (singleton.userData['status'] == 'normal')
                                         ? 'REPORT DANGER'
                                         : 'ALL CLEAR',
@@ -196,12 +246,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     itemCount: singleton.students.length,
                                     itemBuilder: (context, index) {
                                       return PersonCard(
-                                          name: singleton.students[index].name,
-                                          description: singleton
-                                              .students[index].description,
-                                          imagePath: singleton
-                                              .students[index].imagePath,
-                                              uid: singleton.students[index].uid,);
+                                        name: singleton.students[index].name,
+                                        description: singleton
+                                            .students[index].description,
+                                        imagePath:
+                                            singleton.students[index].imagePath,
+                                        uid: singleton.students[index].uid,
+                                      );
                                     },
                                   )),
                             ),
@@ -265,6 +316,64 @@ class ReportPopup extends StatelessWidget {
           child: const Text('Submit'),
         ),
       ],
+    );
+  }
+}
+
+class NotificationCard extends StatefulWidget {
+  const NotificationCard(
+      {super.key, required this.message, this.enableActions = false, this.onDeny, this.onConfirm});
+  final String message;
+  final bool enableActions;
+  final Function? onDeny;
+  final Function? onConfirm;
+
+  @override
+  State<NotificationCard> createState() => _NotificationCardState();
+}
+
+class _NotificationCardState extends State<NotificationCard> {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: SizeConfig.blockSizeVertical! * 14,
+      child: Card(
+        color: Colors.grey,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Text(widget.message),
+              (widget.enableActions) ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                      onPressed: () {
+                        if (widget.onDeny != null) {
+                          widget.onDeny!();
+                        }
+                      },
+                      child: const Text(
+                        "Deny",
+                        style: TextStyle(color: Colors.red),
+                      )),
+                  ElevatedButton(
+                      onPressed: () {
+                        if (widget.onConfirm != null) {
+                          widget.onConfirm!();
+                        }
+                      },
+                      child: const Text(
+                        "Confirm",
+                        style: TextStyle(color: Colors.black),
+                      )),
+                ],
+              ) : Container()
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
