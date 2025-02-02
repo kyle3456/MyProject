@@ -36,8 +36,12 @@ class Initial extends StatelessWidget {
               List<dynamic> staffList = singleton.userData["staff"];
               List<dynamic> studentList = singleton.userData["student"];
 
+              if (kDebugMode) {
+                print('Staff: $staffList');
+                // print('Students: $studentList');
+              }
+              singleton.persons.clear();
               for (int i = 0; i < staffList.length; i++) {
-                singleton.persons.clear();
                 singleton.persons.add(Person(
                   name: staffList[i]["name"],
                   description: staffList[i]["email"],
@@ -48,8 +52,10 @@ class Initial extends StatelessWidget {
                 ));
               }
 
+              // print("PERSONS: ${singleton.persons}");
+
+              singleton.students.clear();
               for (int i = 0; i < studentList.length; i++) {
-                singleton.students.clear();
                 singleton.students.add(Person(
                   name: studentList[i]["name"],
                   description: studentList[i]["email"],
@@ -60,12 +66,13 @@ class Initial extends StatelessWidget {
                 ));
               }
             } else if (singleton.persons.isNotEmpty) {
+              print("CLEARING because account type is: ${singleton.userData["type"]}");
               singleton.persons.clear();
               singleton.students.clear();
             }
 
             if (kDebugMode) {
-              print('Singleton: ${singleton.userData}');
+              // print('Singleton: ${singleton.userData}');
             }
 
             singleton.notify();

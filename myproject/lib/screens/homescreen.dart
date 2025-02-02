@@ -79,10 +79,31 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  List<Widget> notifications = [];
+
   Future<void> getNotifications() async {
     // check account type
     if (singleton.userData["type"] == 'admin') {
       // get all notifications
+      List<dynamic> police_requests = singleton.userData["police_requests"];
+      notifications = police_requests
+          .map((e) => NotificationCard(
+                senderId: e,
+                message: "Police request school access",
+                enableActions: true,
+                onConfirm: () {
+                  // handle confirm
+                },
+                onDeny: () {
+                  // handle deny
+                  setState(() {
+                                      DatabaseService().deletePoliceRequest(e);
+                                    });
+                  
+                },
+              ))
+          .toList();
+
       // return all notifications
     } else if (singleton.userData["type"] == 'teacher') {
       // get notifications for the user
@@ -93,16 +114,20 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (singleton.userData["type"] == 'police') {
       // get notifications for the user
       // return notifications for the user
-      
     }
   }
 
   @override
   void initState() {
     super.initState();
+    getNotifications();
     DatabaseService().getListOfStudentsFromTeacher().then((value) {
       setState(() {
-        singleton.persons = value;
+        // print("SETTING SINGLETON PERSONS to $value");
+
+        if (value.isNotEmpty) {
+          singleton.persons = value;
+        }
       });
     });
   }
@@ -112,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Singleton singleton = Singleton();
     String accountType = singleton.userData["type"];
 
-    print(singleton.userData);
+    // print("HOME PERSONS: ${singleton.persons}");
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
@@ -128,21 +153,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         endDrawer: Drawer(
           child: SafeArea(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: <Widget>[
-                NotificationCard(message: "You have a message", enableActions: true,),
-                // ListTile(
-                //   title: const Text('Settings'),
-                //   onTap: () {
-                //   },
-                // ),
-                // ListTile(
-                //   title: const Text('Logout'),
-                //   onTap: () {
-                //   },
-                // ),
-              ],
+            child: ListView.builder(
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                return notifications[index];
+              },
             ),
           ),
         ),
@@ -176,6 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               description: singleton.persons[index].description,
                               imagePath: singleton.persons[index].imagePath,
                               uid: singleton.persons[index].uid,
+                              type: "teacher",
                             );
                           },
                         )),
@@ -252,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         imagePath:
                                             singleton.students[index].imagePath,
                                         uid: singleton.students[index].uid,
+                                        type: "student",
                                       );
                                     },
                                   )),
@@ -322,8 +339,14 @@ class ReportPopup extends StatelessWidget {
 
 class NotificationCard extends StatefulWidget {
   const NotificationCard(
-      {super.key, required this.message, this.enableActions = false, this.onDeny, this.onConfirm});
+      {super.key,
+      required this.message,
+      required this.senderId,
+      this.enableActions = false,
+      this.onDeny,
+      this.onConfirm});
   final String message;
+  final String senderId;
   final bool enableActions;
   final Function? onDeny;
   final Function? onConfirm;
@@ -345,31 +368,33 @@ class _NotificationCardState extends State<NotificationCard> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(widget.message),
-              (widget.enableActions) ? Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        if (widget.onDeny != null) {
-                          widget.onDeny!();
-                        }
-                      },
-                      child: const Text(
-                        "Deny",
-                        style: TextStyle(color: Colors.red),
-                      )),
-                  ElevatedButton(
-                      onPressed: () {
-                        if (widget.onConfirm != null) {
-                          widget.onConfirm!();
-                        }
-                      },
-                      child: const Text(
-                        "Confirm",
-                        style: TextStyle(color: Colors.black),
-                      )),
-                ],
-              ) : Container()
+              (widget.enableActions)
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                            onPressed: () {
+                              if (widget.onDeny != null) {
+                                widget.onDeny!();
+                              }
+                            },
+                            child: const Text(
+                              "Deny",
+                              style: TextStyle(color: Colors.red),
+                            )),
+                        ElevatedButton(
+                            onPressed: () {
+                              if (widget.onConfirm != null) {
+                                widget.onConfirm!();
+                              }
+                            },
+                            child: const Text(
+                              "Confirm",
+                              style: TextStyle(color: Colors.black),
+                            )),
+                      ],
+                    )
+                  : Container()
             ],
           ),
         ),

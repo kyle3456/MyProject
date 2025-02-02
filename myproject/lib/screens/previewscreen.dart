@@ -32,6 +32,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 description: singleton.persons[index].description,
                 imagePath: singleton.persons[index].imagePath,
                 uid: singleton.persons[index].uid,
+                type: "teacher",
                 onTap: () {
                   showDialog(
                     context: context,

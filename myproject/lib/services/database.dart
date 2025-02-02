@@ -202,11 +202,12 @@ class DatabaseService {
         .child(Auth().user!.uid);
 
     final currentDanger = await ref.once();
-    Map<String, dynamic> data = Map<String, dynamic>.from(currentDanger.snapshot.value as Map);
+    Map<String, dynamic> data =
+        Map<String, dynamic>.from(currentDanger.snapshot.value as Map);
     if (data["danger"] == true) {
-      ref.set({"danger":false});
+      ref.set({"danger": false});
     } else {
-      ref.set({"danger":true});
+      ref.set({"danger": true});
     }
     // set the status of self to SOS
     final ref2 =
@@ -231,7 +232,6 @@ class DatabaseService {
   //   }
   // }
 
-
   Future<void> sendSchoolRequestToAdmin(String adminUID) {
     // check that our account type is police
     if (singleton.userData['type'] != 'police') {
@@ -243,5 +243,96 @@ class DatabaseService {
     return ref.update({
       'police_requests': FieldValue.arrayUnion([Auth().user!.uid])
     });
+  }
+
+  // TODO: the user document gets deleted, but fails to be removed from admin and firebase auth
+  Future<void> deleteTeacher(String teacherUID) async {
+    // check if the user is an admin first
+    if (singleton.userData['type'] == 'admin') {
+      final ref =
+          FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // remove the teacher from the staff field
+      ref.update({
+        'staff': FieldValue.arrayRemove([teacherUID])
+      });
+
+      // remove the teacher's own document
+      final teacherRef =
+          FirebaseFirestore.instance.collection('users').doc(teacherUID);
+      teacherRef.delete().then(
+        (value) {
+          // delete the teacher's account
+          return Auth().deleteAccount(teacherUID, 'teacher');
+        }
+      );
+    }
+  }
+
+  Future<void> unlinkTeacher(String teacherUID) async {
+    // check if the user is an admin first
+    if (singleton.userData['type'] == 'admin') {
+      final ref =
+          FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // remove the teacher from the staff field
+      ref.update({
+        'staff': FieldValue.arrayRemove([teacherUID])
+      });
+    }
+  }
+
+  Future<void> deleteStudent(String studentUID) async {
+    // check if the user is an admin first
+    if (singleton.userData['type'] == 'admin') {
+      final ref =
+          FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // remove the student from the student field, the student field is an array of maps
+      // so we need to remove the map that contains the student's uid
+      ref.update({
+        'student': FieldValue.arrayRemove([
+          {
+            'uid': studentUID
+          }
+        ])
+      });
+
+      // remove the student's own document
+      final studentRef =
+          FirebaseFirestore.instance.collection('users').doc(studentUID);
+      studentRef.delete().then(
+        (value) {
+          // delete the student's account
+          return Auth().deleteAccount(studentUID, 'student');
+        }
+      );
+    }
+  }
+
+  Future<void> unlinkStudent(String studentUID) async {
+    // check if the user is an admin first
+    if (singleton.userData['type'] == 'admin') {
+      final ref =
+          FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // remove the student from the student field
+      ref.update({
+        'student': FieldValue.arrayRemove([studentUID])
+      });
+    }
+  }
+
+  Future<void> deletePoliceRequest(String policeUID) async {
+    // check if the user is an admin first
+    if (singleton.userData['type'] == 'admin') {
+      final ref =
+          FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // remove the police from the police_requests field
+      ref.update({
+        'police_requests': FieldValue.arrayRemove([policeUID])
+      });
+    }
   }
 }

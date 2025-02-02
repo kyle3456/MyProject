@@ -128,6 +128,35 @@ class Auth {
     }
   }
 
+  Future<void> deleteAccount(String uid, String type) async {
+    // cache our own login details
+    String email = user!.email!;
+    String password = _singleton.userData["password"];
+
+    // get the login credentials from the admin user data
+    Map<String, dynamic> loginCredentials = {};
+    if (type == "teacher") {
+      for (Map<String, dynamic> element in _singleton.userData["staff"]) {
+        if (element["uid"] == uid) {
+          loginCredentials = element;
+          break;
+        }
+      }
+
+      // login as that user and delete the account
+      await _auth
+          .signInWithEmailAndPassword(
+              email: loginCredentials["email"],
+              password: loginCredentials["password"])
+          .then((value) async {
+        await value.user!.delete().then((_) {
+          // log back in as the admin
+          _auth.signInWithEmailAndPassword(email: email, password: password);
+        });
+      });
+    }
+  }
+
   // delete the user
   Future<void> deleteUser(String accountType) async {
     try {

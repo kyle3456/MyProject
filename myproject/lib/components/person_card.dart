@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:myproject/size_config.dart';
 import 'package:myproject/shared/singleton.dart';
 import 'package:provider/provider.dart';
+import 'package:myproject/services/database.dart';
 
 class PersonCard extends StatefulWidget {
   PersonCard(
@@ -12,12 +13,14 @@ class PersonCard extends StatefulWidget {
       required this.description,
       required this.imagePath,
       required this.uid,
+      required this.type,
       this.onTap});
 
   final String name;
   final String description;
   String imagePath;
   final String uid;
+  final String type;
   final Function? onTap;
 
   @override
@@ -47,7 +50,9 @@ class _PersonCardState extends State<PersonCard> {
       width: SizeConfig.blockSizeHorizontal! * 80,
       height: SizeConfig.blockSizeVertical! * 15,
       child: Card(
-          color: (inTeacherRoster) ? Color.fromARGB(255, 109, 230, 135) : Color.fromARGB(255, 150, 153, 153),
+          color: (inTeacherRoster)
+              ? Color.fromARGB(255, 109, 230, 135)
+              : Color.fromARGB(255, 150, 153, 153),
           child: InkWell(
             onTap: () {
               if (widget.onTap != null) {
@@ -61,6 +66,14 @@ class _PersonCardState extends State<PersonCard> {
               setState(() {
                 status = "Sending to server";
               });
+            },
+            onLongPress: () {
+              print("long pressed!");
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DeletePopup(type: widget.type, uid: widget.uid);
+                  });
             },
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -111,6 +124,44 @@ class _PersonCardState extends State<PersonCard> {
               ),
             ),
           )),
+    );
+  }
+}
+
+class DeletePopup extends StatefulWidget {
+  const DeletePopup({super.key, required this.type, required this.uid});
+  final String type;
+  final String uid;
+
+  @override
+  State<DeletePopup> createState() => _DeletePopupState();
+}
+
+class _DeletePopupState extends State<DeletePopup> {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Delete'),
+      content: const Text('Are you sure you want to delete this person?'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('No'),
+        ),
+        TextButton(
+          onPressed: () {
+            if (widget.type == 'student') {
+              DatabaseService().deleteStudent(widget.uid);
+            } else {
+              DatabaseService().deleteTeacher(widget.uid);
+            }
+            Navigator.of(context).pop();
+          },
+          child: const Text('Yes'),
+        ),
+      ],
     );
   }
 }

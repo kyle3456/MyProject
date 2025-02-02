@@ -39,6 +39,7 @@ class _StudentEditState extends State<StudentEdit> {
               description: student['email'],
               imagePath: "assets/Pfp.jpg",
               uid: student['uid'],
+              type: "student",
               onTap: () {
                 print("Tapped on ${student['name']}");
                 if (singleton.userData.containsKey('students')) {
