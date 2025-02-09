@@ -35,6 +35,11 @@ class Initial extends StatelessWidget {
             if (singleton.userData["type"] == "admin") {
               List<dynamic> staffList = singleton.userData["staff"];
               List<dynamic> studentList = singleton.userData["student"];
+              
+              List<dynamic> policeList = [];
+              if (singleton.userData.containsKey("police")) {
+                policeList = singleton.userData["police"];
+              }
 
               if (kDebugMode) {
                 print('Staff: $staffList');
@@ -65,6 +70,19 @@ class Initial extends StatelessWidget {
                   uid: studentList[i]["uid"],
                 ));
               }
+
+
+              singleton.police.clear();
+              for (int i = 0; i < policeList.length; i++) {
+                singleton.police.add(Person(
+                  name: "Police",
+                  description: policeList[i],
+                  imagePath:
+                      'assets/Pfp.jpg',
+                  uid: policeList[i],
+                ));
+              }
+
             } else if (singleton.persons.isNotEmpty) {
               print("CLEARING because account type is: ${singleton.userData["type"]}");
               singleton.persons.clear();

@@ -27,6 +27,13 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   Map<String, Marker> _markers = {};
   final Singleton _singleton = Singleton();
+  Set<Polygon> _polygons = {};
+  List<LatLng> points = [
+    LatLng(33.61806, 117.823),
+    LatLng(34.619179, 118.822877),
+    LatLng(33.918118, 120.821911),
+    LatLng(33.618496, 117.823),
+  ];
 
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(33.61806, -117.823),
@@ -173,24 +180,89 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _polygons.add(
+      Polygon(
+        // given polygonId
+        polygonId: PolygonId('1'),
+        // initialize the list of points to display polygon
+        points: points,
+        // given color to polygon
+        fillColor: Colors.green.withOpacity(0.3),
+        // given border color to polygon
+        strokeColor: Colors.green,
+        geodesic: true,
+        // given width of border
+        strokeWidth: 4,
+      )
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    print("POLYGONS: $_polygons");
     return Scaffold(
       body: Center(
           child: SizedBox(
               width: SizeConfig.blockSizeHorizontal! * 100,
               height: SizeConfig.blockSizeVertical! * 100,
-              child: GoogleMap(
-                mapType: MapType.satellite,
-                initialCameraPosition: _kGooglePlex,
-                // onMapCreated: (GoogleMapController controller) {
-                //   _controller.complete(controller);
-                // },
-                onMapCreated: _onMapCreated,
-                markers: _markers.values.toSet(),
-                onTap: (LatLng latLng) {
-                  print('Tapped on $latLng');
-                },
-                buildingsEnabled: true,
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    mapType: MapType.satellite,
+                    initialCameraPosition: _kGooglePlex,
+                    // onMapCreated: (GoogleMapController controller) {
+                    //   _controller.complete(controller);
+                    // },
+                    onMapCreated: _onMapCreated,
+                    markers: _markers.values.toSet(),
+                    polygons: _polygons,
+                    onTap: (LatLng latLng) {
+                      print('Tapped on $latLng');
+                    },
+                    buildingsEnabled: true,
+                  ),
+                  // Editor Buttons on the right side
+                  Positioned(
+                      right: 15,
+                      top: 30,
+                    child: SizedBox(
+                    width: SizeConfig.blockSizeHorizontal! * 15,
+                    height: SizeConfig.blockSizeVertical! * 33,
+                    child: Card(
+                      color: Colors.white,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton( // Safe Zone: create safe (green) polygon vertex
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              adjustMarkers(0.001);
+                            },
+                          ),
+                          IconButton( // Danger Zone: create danger (red) polygon vertex
+                            icon: Icon(Icons.remove),
+                            onPressed: () {
+                              adjustMarkers(0.001);
+                            },
+                          ),
+                          IconButton( // Trash: remove polygons/markers
+                            icon: Icon(Icons.remove),
+                            onPressed: () {
+                              adjustMarkers(0.001);
+                            },
+                          ),
+                          IconButton( // Warning: create warning (yellow) marker
+                            icon: Icon(Icons.remove),
+                            onPressed: () {
+                              adjustMarkers(0.001);
+                            },
+                          ),
+                        ],)
+                    )
+                  ))
+                ],
               ))),
       bottomNavigationBar: const NavBar(
         currentIndex: 1,

@@ -126,6 +126,13 @@ class _SchoolCardState extends State<SchoolCard> {
         onTap: () {
           print("Sending request to admin: ${widget.adminID}");
           DatabaseService().sendSchoolRequestToAdmin(widget.adminID);
+
+          // show snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Request sent to admin"),
+            ),
+          );
         },
         child: Card(
           child: Column(

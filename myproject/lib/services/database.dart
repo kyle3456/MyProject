@@ -238,6 +238,14 @@ class DatabaseService {
       return Future.value();
     }
 
+    final selfRef =
+        FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+    selfRef.update({
+      "pending_requests": {
+        adminUID: "pending",
+      }
+    });
+
     final ref = FirebaseFirestore.instance.collection('users').doc(adminUID);
 
     return ref.update({
@@ -260,12 +268,10 @@ class DatabaseService {
       // remove the teacher's own document
       final teacherRef =
           FirebaseFirestore.instance.collection('users').doc(teacherUID);
-      teacherRef.delete().then(
-        (value) {
-          // delete the teacher's account
-          return Auth().deleteAccount(teacherUID, 'teacher');
-        }
-      );
+      teacherRef.delete().then((value) {
+        // delete the teacher's account
+        return Auth().deleteAccount(teacherUID, 'teacher');
+      });
     }
   }
 
@@ -292,21 +298,17 @@ class DatabaseService {
       // so we need to remove the map that contains the student's uid
       ref.update({
         'student': FieldValue.arrayRemove([
-          {
-            'uid': studentUID
-          }
+          {'uid': studentUID}
         ])
       });
 
       // remove the student's own document
       final studentRef =
           FirebaseFirestore.instance.collection('users').doc(studentUID);
-      studentRef.delete().then(
-        (value) {
-          // delete the student's account
-          return Auth().deleteAccount(studentUID, 'student');
-        }
-      );
+      studentRef.delete().then((value) {
+        // delete the student's account
+        return Auth().deleteAccount(studentUID, 'student');
+      });
     }
   }
 
@@ -332,6 +334,38 @@ class DatabaseService {
       // remove the police from the police_requests field
       ref.update({
         'police_requests': FieldValue.arrayRemove([policeUID])
+      });
+
+      // remove the police's request from their pending_requests field with the key matching the admin's uid
+      final policeRef =
+          FirebaseFirestore.instance.collection('users').doc(policeUID);
+      policeRef.update({
+        'pending_requests': FieldValue.delete()
+      });
+    }
+  }
+
+  Future<void> acceptPoliceRequest(String policeUID) async {
+    // check if the user is an admin first
+    if (singleton.userData['type'] == 'admin') {
+      final ref =
+          FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
+
+      // remove the police from the police_requests field
+      ref.update({
+        'police_requests': FieldValue.arrayRemove([policeUID])
+      });
+
+      // add the police to the police field
+      ref.update({
+        'police': FieldValue.arrayUnion([policeUID])
+      });
+
+      // change the police's pending request status to true in the field matching our uid
+      final policeRef =
+          FirebaseFirestore.instance.collection('users').doc(policeUID);
+      policeRef.update({
+        'pending_requests': {Auth().user!.uid: true}
       });
     }
   }

@@ -43,6 +43,8 @@ class Singleton extends ChangeNotifier {
   ];
 
   List<Person> students = [];
+  
+  List<Person> police = [];
 
   String savedImagePath = '';
 

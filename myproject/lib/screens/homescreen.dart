@@ -82,6 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> notifications = [];
 
   Future<void> getNotifications() async {
+    notifications.clear();
     // check account type
     if (singleton.userData["type"] == 'admin') {
       // get all notifications
@@ -93,13 +94,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 enableActions: true,
                 onConfirm: () {
                   // handle confirm
+                  setState(() {
+                    DatabaseService().acceptPoliceRequest(e);
+                  });
                 },
                 onDeny: () {
                   // handle deny
                   setState(() {
-                                      DatabaseService().deletePoliceRequest(e);
-                                    });
-                  
+                    DatabaseService().deletePoliceRequest(e);
+                  });
                 },
               ))
           .toList();
@@ -151,15 +154,19 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        endDrawer: Drawer(
-          child: SafeArea(
-            child: ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                return notifications[index];
-              },
+        endDrawer: Consumer<Singleton>(
+          builder: (context, singleton, child) {
+            getNotifications();
+            return Drawer(
+            child: SafeArea(
+              child: ListView.builder(
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  return notifications[index];
+                },
+              ),
             ),
-          ),
+          );}
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -181,20 +188,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     // color: Colors.red,
                     width: SizeConfig.blockSizeHorizontal! * 85,
                     height: SizeConfig.blockSizeVertical! * 40,
-                    child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListView.builder(
-                          itemCount: singleton.persons.length,
-                          itemBuilder: (context, index) {
-                            return PersonCard(
-                              name: singleton.persons[index].name,
-                              description: singleton.persons[index].description,
-                              imagePath: singleton.persons[index].imagePath,
-                              uid: singleton.persons[index].uid,
-                              type: "teacher",
-                            );
-                          },
-                        )),
+                    child:Card(
+                      color: const Color.fromARGB(255, 66, 66, 66),
+                      child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            itemCount: singleton.persons.length,
+                            itemBuilder: (context, index) {
+                              return PersonCard(
+                                name: singleton.persons[index].name,
+                                description: singleton.persons[index].description,
+                                imagePath: singleton.persons[index].imagePath,
+                                uid: singleton.persons[index].uid,
+                                type: "teacher",
+                              );
+                            },
+                          )),
+                    ),
                   ),
                   (singleton.userData["type"] != 'admin')
                       ? Consumer<Singleton>(
@@ -256,22 +266,54 @@ class _HomeScreenState extends State<HomeScreen> {
                               // color: Colors.red,
                               width: SizeConfig.blockSizeHorizontal! * 85,
                               height: SizeConfig.blockSizeVertical! * 40,
-                              child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ListView.builder(
-                                    itemCount: singleton.students.length,
-                                    itemBuilder: (context, index) {
-                                      return PersonCard(
-                                        name: singleton.students[index].name,
-                                        description: singleton
-                                            .students[index].description,
-                                        imagePath:
-                                            singleton.students[index].imagePath,
-                                        uid: singleton.students[index].uid,
-                                        type: "student",
-                                      );
-                                    },
-                                  )),
+                              child: Card(
+                                color: const Color.fromARGB(255, 66, 66, 66),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ListView.builder(
+                                      itemCount: singleton.students.length,
+                                      itemBuilder: (context, index) {
+                                        return PersonCard(
+                                          name: singleton.students[index].name,
+                                          description: singleton
+                                              .students[index].description,
+                                          imagePath:
+                                              singleton.students[index].imagePath,
+                                          uid: singleton.students[index].uid,
+                                          type: "student",
+                                        );
+                                      },
+                                    )),
+                              ),
+                            ),
+                            const Text(
+                              'Police',
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              // color: Colors.red,
+                              width: SizeConfig.blockSizeHorizontal! * 85,
+                              height: SizeConfig.blockSizeVertical! * 40,
+                              child: Card(
+                                color: const Color.fromARGB(255, 66, 66, 66),
+                                child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ListView.builder(
+                                      itemCount: singleton.police.length,
+                                      itemBuilder: (context, index) {
+                                        return PersonCard(
+                                          name: singleton.police[index].name,
+                                          description: singleton
+                                              .police[index].description,
+                                          imagePath:
+                                              singleton.police[index].imagePath,
+                                          uid: singleton.police[index].uid,
+                                          type: "police",
+                                        );
+                                      },
+                                    )),
+                              ),
                             ),
                           ],
                         ),
