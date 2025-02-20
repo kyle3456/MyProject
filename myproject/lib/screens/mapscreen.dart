@@ -27,7 +27,16 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   Map<String, Marker> _markers = {};
   final Singleton _singleton = Singleton();
+
+  //  0: Safe Zone, 1: Danger Zone, 2: Delete, 3: Warning Marker
+  int selectedToolIdx = -1;
+
+  // List for polygon in progress
+  List<LatLng> _polygonInProgress = [];
+
+  // Set of finished polygons
   Set<Polygon> _polygons = {};
+
   List<LatLng> points = [
     LatLng(33.61806, 117.823),
     LatLng(34.619179, 118.822877),
@@ -45,7 +54,6 @@ class _MapScreenState extends State<MapScreen> {
       List<dynamic> students = _singleton.userData['students'];
 
       print("Teacher has ${students.length} students: $students");
-      
 
       for (int i = 0; i < students.length; i++) {
         var student =
@@ -66,8 +74,7 @@ class _MapScreenState extends State<MapScreen> {
             snippet: student['status'],
           ),
         );
-        _markers[student['uid']] =
-            marker;
+        _markers[student['uid']] = marker;
       }
 
       adjustMarkers(0.001);
@@ -109,12 +116,17 @@ class _MapScreenState extends State<MapScreen> {
             clumpCount++;
 
             // create a new marker
-            final marker = Marker( // TODO: customize the marker color
-              markerId: MarkerId('Group of $clumpCount'), // TODO: clump count is currently wrong
+            final marker = Marker(
+              // TODO: customize the marker color
+              markerId: MarkerId(
+                  'Group of $clumpCount'), // TODO: clump count is currently wrong
               position: LatLng(newLat, newLong),
               infoWindow: InfoWindow(
                 title: 'Group of $clumpCount',
-                snippet: (_markers[key]!.infoWindow.snippet != 'normal' || _markers[otherKey]!.infoWindow.snippet != 'normal') ? 'SOS': 'normal',
+                snippet: (_markers[key]!.infoWindow.snippet != 'normal' ||
+                        _markers[otherKey]!.infoWindow.snippet != 'normal')
+                    ? 'SOS'
+                    : 'normal',
               ),
             );
 
@@ -138,7 +150,24 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  double calculateDistance(double startLatitude, double startLongitude, double endLatitude, double endLongitude) {
+  // drop marker on map
+  void dropMarker(LatLng latlng, String title, String snippet) {
+    final marker = Marker(
+      markerId: MarkerId('new'),
+      position: latlng,
+      infoWindow: InfoWindow(
+        title: title,
+        snippet: snippet,
+      ),
+    );
+
+    setState(() {
+      _markers['new'] = marker;
+    });
+  }
+
+  double calculateDistance(double startLatitude, double startLongitude,
+      double endLatitude, double endLongitude) {
     // convert degrees to radians
     double startLat = startLatitude * (pi / 180);
     double startLong = startLongitude * (pi / 180);
@@ -150,7 +179,8 @@ class _MapScreenState extends State<MapScreen> {
     double deltaLong = endLong - startLong;
 
     // calculate the distance
-    double a = pow(sin(deltaLat / 2), 2) + cos(startLat) * cos(endLat) * pow(sin(deltaLong / 2), 2);
+    double a = pow(sin(deltaLat / 2), 2) +
+        cos(startLat) * cos(endLat) * pow(sin(deltaLong / 2), 2);
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
     double distance = 6371 * c;
 
@@ -182,21 +212,19 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _polygons.add(
-      Polygon(
-        // given polygonId
-        polygonId: PolygonId('1'),
-        // initialize the list of points to display polygon
-        points: points,
-        // given color to polygon
-        fillColor: Colors.green.withOpacity(0.3),
-        // given border color to polygon
-        strokeColor: Colors.green,
-        geodesic: true,
-        // given width of border
-        strokeWidth: 4,
-      )
-    );
+    _polygons.add(Polygon(
+      // given polygonId
+      polygonId: PolygonId('1'),
+      // initialize the list of points to display polygon
+      points: points,
+      // given color to polygon
+      fillColor: Colors.green.withOpacity(0.3),
+      // given border color to polygon
+      strokeColor: Colors.green,
+      geodesic: true,
+      // given width of border
+      strokeWidth: 4,
+    ));
   }
 
   @override
@@ -220,48 +248,164 @@ class _MapScreenState extends State<MapScreen> {
                     polygons: _polygons,
                     onTap: (LatLng latLng) {
                       print('Tapped on $latLng');
+
+                      if (selectedToolIdx == 0 || selectedToolIdx == 1) {
+                        // If already started a polygon, check if the user tapped near the first vertex.
+                        double distance = 0;
+                        if (_polygonInProgress.isNotEmpty) {
+                          distance = calculateDistance(
+                              _polygonInProgress[0].latitude,
+                              _polygonInProgress[0].longitude,
+                              latLng.latitude,
+                              latLng.longitude);
+                        }
+                        print("Distance from first point: $distance, current point count: ${_polygonInProgress.length}");
+                        // If at least 3 points have been added, and the tap is near the first point, close the polygon
+                        if (_polygonInProgress.length >= 3 &&
+                            distance < 0.001) {
+                          // Close the polygon
+                          Color fillColor = (selectedToolIdx == 0)
+                              ? Colors.green.withOpacity(0.3)
+                              : Colors.red.withOpacity(0.3);
+                          Color strokeColor = (selectedToolIdx == 0)
+                              ? Colors.green
+                              : Colors.red;
+
+                          _polygons.add(Polygon(
+                              polygonId: PolygonId(DateTime.now()
+                                  .millisecondsSinceEpoch
+                                  .toString()),
+                              points: _polygonInProgress,
+                              fillColor: fillColor,
+                              strokeColor: strokeColor,
+                              geodesic: true,
+                              strokeWidth: 4,
+                              onTap: () {
+                                if (selectedToolIdx == 2) {
+                                  setState(() {
+                                    _polygons.removeWhere((element) =>
+                                        element.polygonId ==
+                                        PolygonId(DateTime.now()
+                                            .millisecondsSinceEpoch
+                                            .toString()));
+                                  });
+                                }
+                              }));
+                              setState(() {
+                                _polygonInProgress.clear();
+                              });
+                        }
+
+                        // Add the point to the polygon in progress
+                        setState(() {
+                          _polygonInProgress.add(latLng);
+                        });
+                      } else if (selectedToolIdx == 3) {
+                        dropMarker(latLng, 'Warning', 'Warning');
+                      }
                     },
                     buildingsEnabled: true,
                   ),
                   // Editor Buttons on the right side
-                  Positioned(
-                      right: 15,
-                      top: 30,
-                    child: SizedBox(
-                    width: SizeConfig.blockSizeHorizontal! * 15,
-                    height: SizeConfig.blockSizeVertical! * 33,
-                    child: Card(
-                      color: Colors.white,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton( // Safe Zone: create safe (green) polygon vertex
-                            icon: Icon(Icons.add),
-                            onPressed: () {
-                              adjustMarkers(0.001);
-                            },
-                          ),
-                          IconButton( // Danger Zone: create danger (red) polygon vertex
-                            icon: Icon(Icons.remove),
-                            onPressed: () {
-                              adjustMarkers(0.001);
-                            },
-                          ),
-                          IconButton( // Trash: remove polygons/markers
-                            icon: Icon(Icons.remove),
-                            onPressed: () {
-                              adjustMarkers(0.001);
-                            },
-                          ),
-                          IconButton( // Warning: create warning (yellow) marker
-                            icon: Icon(Icons.remove),
-                            onPressed: () {
-                              adjustMarkers(0.001);
-                            },
-                          ),
-                        ],)
-                    )
-                  ))
+                  (_singleton.userData["type"] == "police")
+                      ? Positioned(
+                          right: 15,
+                          top: 30,
+                          child: SizedBox(
+                              width: SizeConfig.blockSizeHorizontal! * 15,
+                              height: SizeConfig.blockSizeVertical! * 33,
+                              child: Card(
+                                  color: Colors.white,
+                                  child: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color: (selectedToolIdx == 0)
+                                              ? Colors.grey
+                                              : Colors.transparent,
+                                        ),
+                                        child: IconButton(
+                                          // Safe Zone: create safe (green) polygon vertex
+                                          // starting from 3 points tapped, render the polygon
+                                          // to end the polygon, tap the first point again
+                                          icon: Icon(Icons.add),
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedToolIdx = 0;
+                                            });
+
+                                            adjustMarkers(0.001);
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color: (selectedToolIdx == 1)
+                                              ? Colors.grey
+                                              : Colors.transparent,
+                                        ),
+                                        child: IconButton(
+                                          // Danger Zone: create danger (red) polygon vertex
+                                          // same as safe zone, but red
+                                          icon: Icon(Icons.dangerous),
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedToolIdx = 1;
+                                            });
+
+                                            adjustMarkers(0.001);
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color: (selectedToolIdx == 2)
+                                              ? Colors.grey
+                                              : Colors.transparent,
+                                        ),
+                                        child: IconButton(
+                                          // Delete Zone: tap a marker/polygon to delete
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedToolIdx = 2;
+                                            });
+
+                                            adjustMarkers(0.001);
+                                          },
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color: (selectedToolIdx == 3)
+                                              ? Colors.grey
+                                              : Colors.transparent,
+                                        ),
+                                        child: IconButton(
+                                          // Warning Marker: drop a yellow warning marker
+                                          icon: Icon(Icons.warning),
+                                          onPressed: () {
+                                            setState(() {
+                                              selectedToolIdx = 3;
+                                            });
+
+                                            adjustMarkers(0.001);
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ))))
+                      : Container(),
                 ],
               ))),
       bottomNavigationBar: const NavBar(
