@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:myproject/services/auth.dart';
 import 'package:myproject/shared/singleton.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -367,6 +368,19 @@ class DatabaseService {
       policeRef.update({
         'pending_requests': {Auth().user!.uid: true}
       });
+    }
+  }
+
+
+  // Save school floor plan drawn by the admin
+  Future<void> saveFloorPlan(Set<Polygon> rooms, Set<Polygon> halls, Set<Polygon> doors, Set<Polygon> windows) async {
+    // check if the user is an admin first
+    if (singleton.userData['type'] == 'admin') {
+      final ref =
+          FirebaseFirestore.instance.collection('schools').doc(singleton.userData['school']);
+
+      // 
+      
     }
   }
 }
