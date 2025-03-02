@@ -340,9 +340,7 @@ class DatabaseService {
       // remove the police's request from their pending_requests field with the key matching the admin's uid
       final policeRef =
           FirebaseFirestore.instance.collection('users').doc(policeUID);
-      policeRef.update({
-        'pending_requests': FieldValue.delete()
-      });
+      policeRef.update({'pending_requests': FieldValue.delete()});
     }
   }
 
@@ -371,16 +369,68 @@ class DatabaseService {
     }
   }
 
-
   // Save school floor plan drawn by the admin
-  Future<void> saveFloorPlan(Set<Polygon> rooms, Set<Polygon> halls, Set<Polygon> doors, Set<Polygon> windows) async {
+  Future<void> saveFloorPlan(Set<Polygon> rooms, Set<Polygon> halls,
+      Set<Polygon> doors, Set<Polygon> windows) async {
+    print("SAVING FLOOR PLAN");
     // check if the user is an admin first
     if (singleton.userData['type'] == 'admin') {
       final ref =
-          FirebaseFirestore.instance.collection('schools').doc(singleton.userData['school']);
+          FirebaseFirestore.instance.collection('users').doc(Auth().user!.uid);
 
-      // 
-      
+      // add the geopooints of each polygon in theri respective array. All 4 arrays are under the field "school_map"
+
+      List<List<GeoPoint>> roomPoints = [];
+      List<List<GeoPoint>> hallPoints = [];
+      List<List<GeoPoint>> doorPoints = [];
+      List<List<GeoPoint>> windowPoints = [];
+      for (Polygon room in rooms) {
+        List<GeoPoint> roomShape = [];
+        for (LatLng point in room.points) {
+          roomShape.add(GeoPoint(point.latitude, point.longitude));
+        }
+        roomPoints.add(roomShape);
+      }
+      print("ROOMS: $roomPoints");
+      for (Polygon hall in halls) {
+        List<GeoPoint> hallShape = [];
+        for (LatLng point in hall.points) {
+          hallShape.add(GeoPoint(point.latitude, point.longitude));
+        }
+        hallPoints.add(hallShape);
+      }
+      print("HALLS: $hallPoints");
+      for (Polygon door in doors) {
+        List<GeoPoint> doorShape = [];
+        for (LatLng point in door.points) {
+          doorShape.add(GeoPoint(point.latitude, point.longitude));
+        }
+        doorPoints.add(doorShape);
+      }
+      print("DOORS: $doorPoints");
+      for (Polygon window in windows) {
+        List<GeoPoint> windowShape = [];
+        for (LatLng point in window.points) {
+          windowShape.add(GeoPoint(point.latitude, point.longitude));
+        }
+        windowPoints.add(windowShape);
+      }
+      print("WINDOWS: $windowPoints");
+
+      Map<String, dynamic> data = {
+        'school_map': {
+          'rooms': roomPoints,
+          'halls': hallPoints,
+          'doors': doorPoints,
+          'windows': windowPoints
+        }
+      };
+
+      print("DATA: $data");
+
+      ref.update({
+        'school_map': data
+      });
     }
   }
 }
