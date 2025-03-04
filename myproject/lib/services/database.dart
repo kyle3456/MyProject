@@ -417,20 +417,49 @@ class DatabaseService {
       }
       print("WINDOWS: $windowPoints");
 
+      Map<String, dynamic> roomData = {};
+      int idx = 0;
+      for (List<GeoPoint> room in roomPoints) {
+        roomData['room$idx'] = room;
+        idx++;
+      }
+      Map<String, dynamic> hallData = {};
+      idx = 0;
+      for (List<GeoPoint> hall in hallPoints) {
+        hallData['hall$idx'] = hall;
+        idx++;
+      }
+      Map<String, dynamic> doorData = {};
+      idx = 0;
+      for (List<GeoPoint> door in doorPoints) {
+        doorData['door$idx'] = door;
+        idx++;
+      }
+      Map<String, dynamic> windowData = {};
+      idx = 0;
+      for (List<GeoPoint> window in windowPoints) {
+        windowData['window$idx'] = window;
+        idx++;
+      }
+
       Map<String, dynamic> data = {
-        'school_map': {
-          'rooms': roomPoints,
-          'halls': hallPoints,
-          'doors': doorPoints,
-          'windows': windowPoints
-        }
+        'rooms': roomData,
+        'halls': hallData,
+        'doors': doorData,
+        'windows': windowData
       };
 
       print("DATA: $data");
 
-      ref.update({
-        'school_map': data
-      });
+      // this causes crashed for some reason, try individual updates
+      ref.update({'school_map': data});
+
+      // ref.update({
+      //   'school_map.rooms': roomPoints,
+      //   'school_map.halls': hallPoints,
+      //   'school_map.doors': doorPoints,
+      //   'school_map.windows': windowPoints
+      // });
     }
   }
 }

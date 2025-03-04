@@ -158,93 +158,85 @@ class _MapScreenState extends State<MapScreen> {
         // load the polygons from the school_map field
         var schoolMap = _singleton.userData['school_map'];
         print("School map: $schoolMap");
-        for (var shapes in schoolMap["doors"]) {
-          for (var shape in shapes) {
+        for (var shape in schoolMap["doors"].keys) {
+          print("Shape: $shape");
+          List<LatLng> latlngs = [];
+          for (var geopoint in schoolMap["doors"][shape]) {
             // convert geopoint to latlng
-            List<LatLng> latlngs = [];
-            for (var geopoint in shape) {
-              LatLng latlng = LatLng(geopoint.latitude, geopoint.longitude);
-              latlngs.add(latlng);
-            }
-            // create a polygon
-            Polygon polygon = Polygon(
-              polygonId: PolygonId(DateTime.now()
-                  .millisecondsSinceEpoch
-                  .toString()), // TODO: change this to a unique id
-              points: latlngs,
-              fillColor: Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
-              strokeColor: Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
-              geodesic: true,
-              strokeWidth: 4,
-            );
-            _polygons.add(polygon);
+            latlngs.add(LatLng(geopoint.latitude, geopoint.longitude));
           }
+          // create a polygon
+          Polygon polygon = Polygon(
+            polygonId: PolygonId(DateTime.now()
+                .millisecondsSinceEpoch
+                .toString()), // TODO: change this to a unique id
+            points: latlngs,
+            fillColor: Color.fromARGB(255, 0, 0, 0).withOpacity(0.3),
+            strokeColor: Color.fromARGB(255, 0, 0, 0),
+            geodesic: true,
+            strokeWidth: 4,
+          );
+          _polygons.add(polygon);
         }
-        for (var shapes in schoolMap["windows"]) {
-          for (var shape in shapes) {
+        for (var shape in schoolMap["windows"].keys) {
+          print("Shape: $shape");
+          List<LatLng> latlngs = [];
+          for (var geopoint in schoolMap["windows"][shape]) {
             // convert geopoint to latlng
-            List<LatLng> latlngs = [];
-            for (var geopoint in shape) {
-              LatLng latlng = LatLng(geopoint.latitude, geopoint.longitude);
-              latlngs.add(latlng);
-            }
-            // create a polygon
-            Polygon polygon = Polygon(
-              polygonId: PolygonId(DateTime.now()
-                  .millisecondsSinceEpoch
-                  .toString()), // TODO: change this to a unique id
-              points: latlngs,
-              fillColor: Color.fromARGB(255, 56, 223, 209).withOpacity(0.3),
-              strokeColor: Color.fromARGB(255, 56, 223, 209).withOpacity(0.3),
-              geodesic: true,
-              strokeWidth: 4,
-            );
-            _polygons.add(polygon);
+            latlngs.add(LatLng(geopoint.latitude, geopoint.longitude));
           }
+          // create a polygon
+          Polygon polygon = Polygon(
+            polygonId: PolygonId(DateTime.now()
+                .millisecondsSinceEpoch
+                .toString()), // TODO: change this to a unique id
+            points: latlngs,
+            fillColor: Color.fromARGB(255, 56, 223, 209).withOpacity(0.3),
+            strokeColor: Color.fromARGB(255, 56, 223, 209),
+            geodesic: true,
+            strokeWidth: 4,
+          );
+          _polygons.add(polygon);
         }
-        for (var shapes in schoolMap["rooms"]) {
-          for (var shape in shapes) {
+        for (var shape in schoolMap["rooms"].keys) {
+          print("Shape: $shape");
+          List<LatLng> latlngs = [];
+          for (var geopoint in schoolMap["rooms"][shape]) {
             // convert geopoint to latlng
-            List<LatLng> latlngs = [];
-            for (var geopoint in shape) {
-              LatLng latlng = LatLng(geopoint.latitude, geopoint.longitude);
-              latlngs.add(latlng);
-            }
-            // create a polygon
-            Polygon polygon = Polygon(
-              polygonId: PolygonId(DateTime.now()
-                  .millisecondsSinceEpoch
-                  .toString()), // TODO: change this to a unique id
-              points: latlngs,
-              fillColor: Color.fromARGB(255, 255, 255, 255).withOpacity(0.75),
-              strokeColor: Color.fromARGB(255, 250, 250, 250),
-              geodesic: true,
-              strokeWidth: 4,
-            );
-            _polygons.add(polygon);
+            latlngs.add(LatLng(geopoint.latitude, geopoint.longitude));
           }
+          // create a polygon
+          Polygon polygon = Polygon(
+            polygonId: PolygonId(DateTime.now()
+                .millisecondsSinceEpoch
+                .toString()), // TODO: change this to a unique id
+            points: latlngs,
+            fillColor: Color.fromARGB(255, 255, 255, 255).withOpacity(0.75),
+            strokeColor: Color.fromARGB(255, 255, 255, 255),
+            geodesic: true,
+            strokeWidth: 4,
+          );
+          _polygons.add(polygon);
         }
-        for (var shapes in schoolMap["halls"]) {
-          for (var shape in shapes) {
+        for (var shape in schoolMap["halls"].keys) {
+          print("Shape: $shape");
+          List<LatLng> latlngs = [];
+          for (var geopoint in schoolMap["halls"][shape]) {
             // convert geopoint to latlng
-            List<LatLng> latlngs = [];
-            for (var geopoint in shape) {
-              LatLng latlng = LatLng(geopoint.latitude, geopoint.longitude);
-              latlngs.add(latlng);
-            }
-            // create a polygon
-            Polygon polygon = Polygon(
-              polygonId: PolygonId(DateTime.now()
-                  .millisecondsSinceEpoch
-                  .toString()), // TODO: change this to a unique id
-              points: latlngs,
-              fillColor: Color.fromARGB(255, 236, 233, 4).withOpacity(0.3),
-              strokeColor: Color.fromARGB(255, 236, 233, 4),
-              geodesic: true,
-              strokeWidth: 4,
-            );
-            _polygons.add(polygon);
+            latlngs.add(LatLng(geopoint.latitude, geopoint.longitude));
           }
+          // create a polygon
+          Polygon polygon = Polygon(
+            polygonId: PolygonId(DateTime.now()
+                .millisecondsSinceEpoch
+                .toString()), // TODO: change this to a unique id
+            points: latlngs,
+            fillColor: Color.fromARGB(255, 236, 233, 4).withOpacity(0.3),
+            strokeColor: Color.fromARGB(255, 236, 233, 4),
+            geodesic: true,
+            strokeWidth: 4,
+          );
+          _polygons.add(polygon);
         }
       }
     }
